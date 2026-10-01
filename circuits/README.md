@@ -11,7 +11,10 @@ Open `bitwright.circ` in **Logisim-evolution 5.0.0**, after building or unpackin
 
 ## Workbench operation
 
-Use the **Poke tool** (hand), reset simulation, and enable ticks. Start at a modest clock rate such as 16 Hz.
+Use the **Poke tool** (hand), reset simulation, and enable ticks. Use 16 Hz when
+observing individual steps, then 1024 Hz for live typing/drawing. One event is
+acknowledged per falling edge, so a slow clock can intentionally expose a queue
+backlog. These settings are starting points, not measured responsiveness claims.
 
 1. **Text:** click the Keyboard component and type ASCII. Its 32-character host queue drives the TTY directly, with data/available sampled on rising clock edges. This demonstrates the host adapter; the future machine-side FIFO is not present.
 2. **Stock pixels:** edit the X/Y (7-bit), Color (3-bit), and Plot inputs. With Plot=1, each falling host-clock edge draws at that coordinate. Color bits are red/green/blue from high to low. Clear resets the image.
