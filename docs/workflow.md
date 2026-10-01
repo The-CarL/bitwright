@@ -1,5 +1,20 @@
 # Source ownership and reproducibility
 
+## Current artifact and amended target
+
+The 2026-10-01 scope amendment makes v1 a keyboard/text-terminal computer through
+stock Keyboard and TTY. Mouse, pixel graphics, framebuffer, and custom Java bridge
+are outside v1. Existing circuits, bridge code, generators, tests, and packaging
+are preserved. In particular, the current entry `circuits/bitwright.circ` and
+`dist/bitwright-m0.zip` still contain and depend on the earlier canvas bridge.
+Their commands below describe that existing experiment, not an already adapted
+keyboard/TTY-only release.
+
+Adapting the entry and package is pending implementation under M0. The amended
+release must open using the pinned simulator without a required custom bridge;
+keep the optional historical experiment reproducible separately. Do not remove
+its code or overwrite its evidence merely because it is outside current scope.
+
 ## One owner per artifact
 
 Use a mixed authoring workflow:
@@ -29,14 +44,16 @@ requires JDK **21**, enforced for reproducible bytecode. M0 uses Temurin
 `21.0.12.1+1`; the Python minimum is **3.12**, with `3.12.12` tested. The repository
 toolchain lock and its verification tooling are authoritative for exact download
 assets/checksums. Desktop installers
-bundle Java. Revalidate circuits, vectors, bridge linkage, and visual I/O in a
-dedicated compatibility change before updating the simulator pin.
+bundle Java. Revalidate circuits, vectors, stock keyboard/TTY behavior, and any
+preserved experimental bridge linkage in a dedicated compatibility change before
+updating the simulator pin.
 
-Use relative native and JAR library references. The M0 candidate ZIP contains
+Use relative library references. The existing experimental M0 candidate ZIP contains
 native circuits/libraries, a prebuilt bridge JAR with its source, development
 tools/tests, memory images, documentation, the toolchain lock, and
-`SHA256SUMS.json`. Final release packaging must also include
-applicable license notices. Readers install the pinned free desktop simulator,
+`SHA256SUMS.json`. The amended keyboard/TTY package must not require the custom
+canvas JAR; that packaging change has not happened yet. Final release packaging
+must also include applicable license notices. Readers install the pinned free desktop simulator,
 extract the ZIP, open the entry `.circ`, reset, and enable ticks. Readers do not
 need Python or a Java compiler; runtime code requires no network access.
 
@@ -47,12 +64,14 @@ go to `build/test-results/` and `build/roundtrip/`. `tools/bw.py package` writes
 it does not replace `tools/bw.py test` or real desktop acceptance.
 
 `python3 tools/bw.py render` compiles the development-only native renderer and
-pixel smoke check against the pinned simulator. It exercises stock RGB Video
+pixel smoke check for the preserved experiment against the pinned simulator. It exercises stock RGB Video
 through the circuit's input pins and writes native circuit renders under
 `build/renders/`. The full test command also runs these checks. These are rendered
 artifacts using Logisim's component painters, not desktop screenshots or evidence
-of real mouse routing. The pixel checker reads the stock display's private image
-field; simulator upgrades must revalidate this explicitly pinned test adapter.
+of real mouse routing. These graphics checks remain in the current test command
+but are not amended v1 acceptance requirements. The pixel checker reads the stock
+display's private image field; simulator upgrades must revalidate this explicitly
+pinned adapter while the optional experiment remains supported.
 
 Do not claim a release works offline until it has been extracted into a different
 directory and exercised without network access. Do not bundle an unverified
@@ -65,7 +84,7 @@ simulator binary or publish an unsupported-platform claim from one-machine tests
 | `architecture/` | Markdown contracts and machine-readable opcode specification |
 | `circuits/` | Native `.circ` projects/libraries, with explicit manual/generated ownership |
 | `tools/` | Standard-library Python tooling, generator, test runner, future assembler/model |
-| `bridges/` | Source-available Java host adapter and build configuration |
+| `bridges/` | Preserved optional mouse-canvas Java experiment and build configuration |
 | `software/` | Future boot/runtime/demo `.asm` sources |
 | `images/memory/` | `v2.0 raw` byte images, listings, symbols, bank-origin manifests |
 | `tests/` | Text vectors, native harnesses, assembly tests, expected traces |
@@ -81,6 +100,11 @@ Every issue names an observable demonstration, dependencies, meaningful tests,
 and closure evidence. Check acceptance before closing an issue; a merged change
 does not by itself prove a desktop integration gate. Keep evidence factual and
 identify tests that still require another platform or real host interaction.
+
+M0 acceptance now covers native/test/storage/loading and stock Keyboard-to-TTY
+desktop behavior, including refocus, pause/resume, reset, save/reopen, offline
+operation, and relocation. Mouse/drag findings are not blockers. M0 remains open;
+the v1 release path is M0 through M4, then M6, with M5 deferred outside that chain.
 
 The eventual reference CPU model is test tooling, never a hidden implementation
 of the delivered computer. Gate logic remains visible and inspectable in `.circ`.

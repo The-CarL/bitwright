@@ -1,23 +1,34 @@
 # Bitwright
 
-**From gates to pixels: building an inspectable 8-bit computer in Logisim-evolution.**
+**From gates to a terminal: building an inspectable 8-bit computer in Logisim-evolution.**
 
 This personal project revisits an unfinished computer engineering undergraduate
 ambition: build a complete computer from primitive circuits, with a CPU, memory,
-keyboard, mouse, terminal, and pixel display.
+keyboard, and text monitor. The v1 user interface is a basic terminal through
+Logisim's stock TTY component.
 
 ## Current status
 
-The v1 architecture is approved. **M0, the feasibility bench, is in progress; this
-is not yet a CPU or complete computer.** Native logic/storage fixtures, testing
-tools, stock I/O, and a source-available mouse canvas establish the first gate.
-M0 is complete only when actual desktop artifacts, reliable test failures, and
-real mouse/display integration are demonstrated. See [acceptance criteria](docs/roadmap.md)
-and [GitHub backlog](docs/backlog.md) for progress and dependencies.
+The approved v1 scope was narrowed on **2026-10-01** to keyboard, CPU, and a text
+monitor/basic terminal. Mouse input, pixel graphics, a framebuffer, and a custom
+Java bridge are outside v1. The CPU, ISA, RAM/ROM, and primitive policy remain.
+
+**M0, the feasibility bench, is still in progress; this is not yet a CPU or
+complete computer.** Its gate is native logic/storage/loading, reliable tests,
+and the real stock Keyboard-to-TTY path, including refocus, pause/reset,
+save/reopen, relocation, and offline operation. Mouse/drag findings no longer
+block v1. See [acceptance criteria](docs/roadmap.md) and the
+[synchronized backlog scope notes](docs/backlog.md).
 The [M0 evidence report](docs/evidence/m0-2026-10-01.md) separates passing automated
 checks from desktop acceptance still to complete.
 
-## Open the bench
+## Open the existing experimental bench
+
+The current `circuits/bitwright.circ` and `dist/bitwright-m0.zip` still contain
+the earlier mouse/pixel experiment and require its prebuilt bridge. They have
+not yet been reduced to the new keyboard/TTY target. Their source and evidence
+are preserved as an optional historical experiment; the scope amendment does
+not change circuits, generators, tests, or packaging.
 
 Use the free desktop [Logisim-evolution 5.0.0](https://github.com/logisim-evolution/logisim-evolution/releases/tag/v5.0.0).
 Desktop installers include Java. A packaged bench includes its prebuilt Java
@@ -59,12 +70,15 @@ official JAR, which is still checked against the pinned SHA-256.
   instruction control. Single-bit D flip-flops and bulk RAM/ROM are allowed.
 - A manageable [51-instruction ISA](architecture/isa.md), stack/subroutines,
   assembler, boot monitor, and example programs.
-- Polling memory-mapped I/O with circuit-owned buffering, an ASCII terminal,
-  and a mouse-operated 128×128 three-bit RGB canvas.
+- Polling memory-mapped keyboard I/O with circuit-owned buffering and an ASCII
+  text monitor through stock TTY.
+- A basic command terminal with help, memory dump/edit, and run commands, plus
+  arithmetic and memory-test programs.
 - Native `.circ` projects that readers can inspect and single-step.
 
-The host bridge captures events and retains pixels; it does not execute the CPU,
-decode addresses, implement machine FIFOs, or run drawing algorithms.
+Stock Keyboard and TTY provide host character input and text rendering; the CPU,
+device registers, and machine FIFO remain circuit logic. No custom Java bridge
+is required by the new v1 target.
 Read the [primitive policy](architecture/primitives.md), [memory/I/O contract](architecture/memory-and-io.md),
 and [clock/control contract](architecture/control.md) for the exact boundary.
 
@@ -72,17 +86,19 @@ and [clock/control contract](architecture/control.md) for the exact boundary.
 
 | Milestone | Result |
 | --- | --- |
-| M0 / `v0.0.1` | Native I/O-and-test feasibility bench |
+| M0 / `v0.0.1` | Native storage/test/loading and Keyboard-to-TTY feasibility bench |
 | M1 / `v0.1` | Verified primitive logic and ALU workbench |
 | M2 / `v0.2` | First ROM program executing on the circuit CPU |
 | M3 / `v0.3` | Complete ISA, assembler, stack, and loading |
 | M4 / `v0.4` | Boot monitor and interactive terminal |
-| M5 / `v0.5` | Mouse-driven painting software |
+| M5 / former `v0.5` | Deferred optional mouse/graphics extension, outside v1 |
 | M6 / `v1.0` | Reproducible offline computer and demonstration release |
 
 The [roadmap](docs/roadmap.md) gives meaningful tests and acceptance evidence for
-each stage. [Milestones](https://github.com/The-CarL/bitwright/milestones) and
-[issues](https://github.com/The-CarL/bitwright/issues) track implementation.
+each stage. M6 depends on M4, with no M5 dependency. The
+[milestones](https://github.com/The-CarL/bitwright/milestones) and
+[issues](https://github.com/The-CarL/bitwright/issues) now reflect the narrowed
+scope; M5 remains open as a deferred optional extension.
 
 ## Repository and source ownership
 
@@ -91,7 +107,7 @@ each stage. [Milestones](https://github.com/The-CarL/bitwright/milestones) and
 | `architecture/` | Approved primitive policy, ISA, memory map, timing, and device target |
 | `circuits/` | Manual native sources and deterministic generated `.circ` outputs |
 | `tools/` | Circuit generation, testing, auditing, and packaging; later assembler/model |
-| `bridges/` | Java host canvas source, contract, and build tests |
+| `bridges/` | Preserved optional mouse-canvas experiment; still used by the existing bench |
 | `images/memory/` | Loadable `v2.0 raw` images and manifests |
 | `tests/` | Vectors, harnesses, and tool tests |
 | `docs/` | Roadmap, evidence, workflow, and build journal |

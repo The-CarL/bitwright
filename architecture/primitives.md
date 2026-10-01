@@ -1,6 +1,6 @@
 # Primitive-component boundary
 
-Approved for the v1 computer:
+Approved for the keyboard/text-terminal v1 scope amended on 2026-10-01:
 
 | Layer | Allowed foundations | Logic Bitwright must build |
 | --- | --- | --- |
@@ -8,19 +8,24 @@ Approved for the v1 computer:
 | State | Single-bit D flip-flops | Register banks, enables, counters, stack pointer, controller state |
 | Bulk storage | Built-in RAM and ROM arrays | Address decoding, write control, FIFO pointers/status |
 | Simulation | Clock sources and test-wrapper input pins | Clock/reset distribution and state advancement policy |
-| Host adapters | Stock Keyboard, TTY, RGB Video; documented source-available Java canvas bridge | CPU-visible device registers, acknowledgements, FIFO control |
+| Host adapters | Stock Keyboard and TTY | CPU-visible device registers, acknowledgements, keyboard FIFO control |
 
 Built-in CPU, ALU, adder, multiplexer, register, counter, comparator, and decoder
 components are prohibited in machine logic. RAM/ROM is for program, data, or fonts;
 lookup tables must not conceal an ALU or instruction controller. Use a hardwired
 multicycle controller, not microcode ROM.
 
-Keep host adapters visibly separate from machine logic. The custom canvas may
-capture host events, retain rendered pixels, and queue host events across the UI
-and simulation boundary. It must not execute instructions, decode CPU addresses,
-run drawing algorithms, or implement the CPU-visible FIFO. A host queue and a
-circuit FIFO are different buffers and must have separate documented capacity
-and overflow behavior.
+Keep host adapters visibly separate from machine logic. Stock Keyboard captures
+characters and stock TTY renders the text monitor. The CPU, address decoding,
+device registers, and keyboard FIFO belong to circuits. The stock host keyboard
+queue and machine FIFO are distinct buffers with separately documented capacity
+and overflow behavior. No mouse, pixel display, framebuffer, or custom Java bridge
+is required for v1.
+
+The existing M0 artifact still includes stock RGB Video and the custom Java canvas
+from the earlier scope. Those circuits, code, tests, and evidence are preserved as
+an optional experiment. Their current audit exceptions document that artifact;
+they do not expand the amended v1 target or make mouse acceptance a prerequisite.
 
 The component audit must follow every native library used by a machine project,
 identify host exceptions explicitly, and reject unknown components until reviewed.
