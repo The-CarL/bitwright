@@ -39,8 +39,10 @@ def pin(c, x, y, label, width=1, output=False):
                      facing="west" if output else "east", tristate=False, labelloc="east" if output else "west")
 
 
-def source(c, x, y, label, width=1):
-    pin(c, x, y, label, width)
+def source(c, x, y, label, width=1, initial=None):
+    node = pin(c, x, y, label, width)
+    if initial is not None:
+        attr(node, initial=hex(initial))
     wire(c, (x, y), (x + 40, y))
     tunnel(c, x + 40, y, label, width)
 
@@ -102,9 +104,9 @@ def project(main, bridge=False):
     for lib, desc in [(0,"Wiring"),(1,"Gates"),(4,"Memory"),(5,"I/O"),(8,"Base")]:
         E.SubElement(p,"lib",name=str(lib),desc="#"+desc)
     if bridge:
-        E.SubElement(p, "lib", name="10", desc="jar#../build/bitwright-bridge.jar#org.bitwright.bridge.BitwrightLibrary")
+        E.SubElement(p, "lib", name="10", desc="jar#../../build/bitwright-bridge.jar#org.bitwright.bridge.BitwrightLibrary")
     if bridge:
-        E.SubElement(p, "lib", name="11", desc="file#manual/foundations.circ")
+        E.SubElement(p, "lib", name="11", desc="file#../../circuits/manual/foundations.circ")
     E.SubElement(p, "main", name=main)
     attr(E.SubElement(p, "options"), showgrid=True, simlimit=10000, simrand=0)
     mappings = E.SubElement(p,"mappings")
@@ -177,7 +179,7 @@ def ram_fixture():
     return p
 
 
-def workbench():
+def mouse_workbench():
     p=project("M0Workbench",bridge=True)
     c=circuit(p,"M0Workbench")
     text(c,60,40,"BITWRIGHT M0 / host I/O feasibility workbench")
@@ -231,6 +233,85 @@ def workbench():
     return p
 
 
+def terminal_control(p):
+    """The same inspectable gate circuit is instantiated by the real front panel."""
+    c = circuit(p, "TerminalControl")
+    # Explicit appearance makes subcircuit ports reproducible and keeps the front panel compact.
+    c.find("a[@name='appearance']").set("val", "custom")
+    shape = E.SubElement(c, "appear")
+    E.SubElement(shape, "rect", x="0", y="0", width="220", height="160", fill="#ffffff", stroke="#000000", **{"stroke-width":"2"})
+    for y, label in ((20,"Run"),(60,"Clear"),(100,"Reset"),(140,"Available")):
+        E.SubElement(shape,"text", x="10", y=str(y+4), fill="#000000", **{"font-family":"SansSerif","font-size":"12"}).text=label
+    for y, label in ((40,"Transfer"),(80,"TtyClear"),(120,"KeyboardClear")):
+        E.SubElement(shape,"text", x="210", y=str(y+4), fill="#000000", **{"font-family":"SansSerif","font-size":"12","text-anchor":"end"}).text=label
+    E.SubElement(shape,"text",x="110",y="78",fill="#000000", **{"font-family":"SansSerif","font-size":"12","text-anchor":"middle"}).text="Terminal"
+    E.SubElement(shape,"text",x="110",y="94",fill="#000000", **{"font-family":"SansSerif","font-size":"12","text-anchor":"middle"}).text="control"
+    for y, source_y in ((20,140),(60,200),(100,260),(140,320)):
+        E.SubElement(shape,"circ-port",x="0",y=str(y),dir="in",pin=f"100,{source_y}")
+    for y, source_y in ((40,140),(80,220),(120,300)):
+        E.SubElement(shape,"circ-port",x="220",y=str(y),dir="out",pin=f"980,{source_y}")
+    E.SubElement(shape,"circ-anchor",x="220",y="80",facing="east")
+    text(c,60,50,"Terminal control / Run and Available permit one transfer; Clear or Reset inhibits it")
+    for y,label in ((140,"Run"),(200,"Clear"),(260,"Reset"),(320,"Available")):
+        source(c,100,y,label)
+    gate(c,"OR",390,240,["Clear","Reset"],"TtyClear")
+    invert(c,560,300,"TtyClear","NotClear")
+    gate(c,"AND",390,140,["Run","Available"],"Ready")
+    gate(c,"AND",730,140,["Ready","NotClear"],"Transfer")
+    sink(c,980,140,"Transfer")
+    sink(c,980,220,"TtyClear")
+    sink(c,980,300,"KeyboardClear",signal="Reset")
+    text(c,60,400,"No gated clock: Run and clear controls gate data transfer, while the source clock keeps running.")
+    return c
+
+
+def workbench():
+    p = project("M0Workbench")
+    E.SubElement(p, "lib", name="11", desc="file#manual/foundations.circ")
+    c = circuit(p,"M0Workbench")
+    # This is a circuit attribute, not a project option. Simulator.setPropagator reads it.
+    attr(c, simulationFrequency="64.0")
+    text(c,60,40,"BITWRIGHT / M0 KEYBOARD TERMINAL")
+    text(c,60,75,"Use Poke, enable clock ticks, click the Keyboard, and type ASCII. Run=1 forwards characters.")
+    text(c,60,105,"Stock host adapters + gate-built control. No CPU or machine FIFO yet. No Java library required.")
+    source(c,140,190,"Run",initial=1)
+    source(c,140,250,"Clear",initial=0)
+    source(c,140,310,"Reset",initial=0)
+    text(c,60,365,"Run=0: hold queued input.")
+    text(c,60,390,"Clear=1: clear screen, hold queued input.")
+    text(c,60,415,"Reset=1: clear screen and input queue.")
+    component(c,0,"Clock",140,470,highDuration=1,lowDuration=1,label="HostClock")
+    wire(c,(140,470),(180,470)); tunnel(c,180,470,"SysClock")
+    text(c,60,520,"64 ticks/s; 32 transfers/s.")
+    text(c,60,545,"Clock keeps running.")
+    text(c,340,180,"KEYBOARD / click here, then type")
+    component(c,5,"Keyboard",340,220,buflen=32,trigger="rising")
+    port(c,340,220,"SysClock")
+    wire(c,(350,230),(350,320),(390,320)); tunnel(c,390,320,"Transfer")
+    wire(c,(360,230),(360,270),(400,270)); tunnel(c,400,270,"KClear")
+    wire(c,(470,230),(470,290),(510,290)); tunnel(c,510,290,"Available")
+    wire(c,(480,230),(520,230)); tunnel(c,520,230,"ASCII",7)
+    text(c,690,170,"TEXT MONITOR / 32 columns x 8 rows")
+    component(c,5,"TTY",690,340,rows=8,cols=32,trigger="rising")
+    wire(c,(690,330),(630,330),(630,230),(610,230)); tunnel(c,610,230,"ASCII",7,"east")
+    wire(c,(690,340),(650,340),(650,450),(690,450)); tunnel(c,690,450,"SysClock")
+    wire(c,(700,350),(700,410),(740,410)); tunnel(c,740,410,"Transfer")
+    wire(c,(710,350),(710,380),(750,380)); tunnel(c,750,380,"TtyClear")
+    E.SubElement(c,"comp",name="TerminalControl",loc=loc(590,550))
+    for y,label in ((490,"Run"),(530,"Clear"),(570,"Reset"),(610,"Available")):
+        port(c,370,y,label)
+    for y,label in ((510,"Transfer"),(550,"TtyClear"),(590,"KeyboardClear")):
+        port(c,590,y,"KClear" if label == "KeyboardClear" else label,side="right")
+    text(c,370,660,"Inspect TerminalControl to see the gates.")
+    for y,label,width,signal in ((210,"Available",1,None),(260,"ASCII",7,None),(310,"Transfer",1,None),(360,"TtyClear",1,None),(410,"KeyboardClear",1,"KClear"),(460,"ClockSeen",1,"SysClock")):
+        sink(c,1130,y,label,width,signal)
+    text(c,940,530,"Observable circuit pins")
+    text(c,940,555,"ASCII stays at the queued front byte.")
+    text(c,940,580,"Available=1 means input is waiting.")
+    terminal_control(p)
+    return p
+
+
 def never_halt():
     p = project("NeverHalt")
     c = circuit(p, "NeverHalt")
@@ -252,8 +333,11 @@ def serialize(p):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check",action="store_true",help="compare only; never write")
+    parser.add_argument("--experiment",action="store_true",help="also generate/check the optional mouse-canvas experiment")
     args=parser.parse_args()
     outputs={"circuits/generated/foundations.circ":foundations(),"circuits/generated/ram-harness.circ":ram_fixture(),"circuits/bitwright.circ":workbench(),"circuits/generated/never-halt.circ":never_halt()}
+    if args.experiment:
+        outputs["experiments/mouse-canvas/workbench.circ"] = mouse_workbench()
     stale=[]
     for relative,p in outputs.items():
         path=ROOT/relative; data=serialize(p)
@@ -263,7 +347,7 @@ def main():
             path.parent.mkdir(parents=True,exist_ok=True); path.write_text(data)
     if stale:
         parser.exit(1,"Stale generated circuits: "+", ".join(stale)+"\n")
-    print("Generated circuit artifacts are current." if args.check else "Generated four M0 native circuit projects.")
+    print("Generated circuit artifacts are current." if args.check else f"Generated {len(outputs)} native circuit projects.")
 
 
 if __name__=="__main__":

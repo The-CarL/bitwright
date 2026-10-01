@@ -24,7 +24,8 @@ in the v1 target. A complete demonstration consists of the basic terminal monito
 with help, memory dump/edit, and run commands, plus an arithmetic example and a
 memory test.
 
-The present entry `.circ` and candidate ZIP still contain the earlier mouse and
-canvas experiment. Its implementation and measured evidence are preserved; a
-focused stock-Keyboard/TTY artifact and package remain implementation work.
+The primary entry is now a focused stock-Keyboard/TTY bench; its revised package
+and desktop evidence remain under acceptance. The earlier mouse/canvas entry is
+preserved at `experiments/mouse-canvas/workbench.circ`, separate from the primary
+runtime. Older downloaded archives retain their original contents.
 M5 is reserved for a deferred optional extension. M6 proceeds from M4 without M5.

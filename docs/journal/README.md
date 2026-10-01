@@ -1,5 +1,14 @@
 # Build journal and publication outline
 
+## Entries
+
+- [2026-10-01: keyboard and text terminal](2026-10-01-keyboard-terminal.md) — current
+  focused M0 implementation and evidence, with desktop acceptance still open.
+- [2026-10-01: original feasibility experiment](2026-10-01.md) — preserved
+  mouse/canvas work and the subsequent scope amendment.
+
+## Writing and publication
+
 Write an entry when an experiment or milestone produces evidence. Each entry
 should include the question, design, experiment, failure, measured result,
 commit/release reference, and next uncertainty. Use a screenshot or small native

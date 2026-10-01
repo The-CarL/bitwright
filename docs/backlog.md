@@ -34,8 +34,9 @@ Dependencies run **M0 → M1 → M2 → M3 → M4 → M6**. Release issue #10 de
 terminal issue #8 and documentation issue #11, not mouse issue #9. M5 and GitHub
 milestone 6 remain deferred and nonblocking; they have not been closed.
 
-Issue #3 includes adapting the current entry/package to the focused keyboard/TTY
-target without a required custom canvas JAR. That implementation is still pending:
-the present entry circuit and ZIP retain the earlier optional experiment. Journal
-work follows actual evidence and final documentation depends on M4, not M5.
+Issue #3 covers the focused keyboard/TTY entry/package without a required custom
+canvas JAR. The primary entry is implemented; revised-package and desktop checks
+remain in progress. The optional canvas entry is preserved separately, while older
+archives retain their original contents. Journal work follows actual evidence,
+and final documentation depends on M4, not M5.
 Dates are not promised; releases follow acceptance criteria.

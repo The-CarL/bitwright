@@ -22,10 +22,10 @@ queue and machine FIFO are distinct buffers with separately documented capacity
 and overflow behavior. No mouse, pixel display, framebuffer, or custom Java bridge
 is required for v1.
 
-The existing M0 artifact still includes stock RGB Video and the custom Java canvas
-from the earlier scope. Those circuits, code, tests, and evidence are preserved as
-an optional experiment. Their current audit exceptions document that artifact;
-they do not expand the amended v1 target or make mouse acceptance a prerequisite.
+The earlier stock RGB Video and custom Java canvas are preserved separately in
+`experiments/mouse-canvas/`. Their circuits, code, tests, and historical evidence
+belong to the optional experiment. Its explicit audit exceptions do not apply to
+the primary Keyboard/TTY runtime or make mouse acceptance a v1 prerequisite.
 
 The component audit must follow every native library used by a machine project,
 identify host exceptions explicitly, and reject unknown components until reviewed.

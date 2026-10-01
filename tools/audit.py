@@ -9,12 +9,12 @@ ALLOWED = {
     "#Wiring": {"Pin", "Probe", "Tunnel", "Splitter", "Constant", "Clock"},
     "#Gates": {"Buffer", "NOT Gate", "AND Gate", "OR Gate", "NAND Gate", "NOR Gate", "XOR Gate", "XNOR Gate"},
     "#Memory": {"D Flip-Flop", "RAM", "ROM"},
-    "#I/O": {"Keyboard", "TTY", "RGB Video", "LED", "Button"},
+    "#I/O": {"Keyboard", "TTY", "LED", "Button"},
     "#Base": {"Text"},
 }
 
 
-def audit(paths: list[Path], root: Path, *, require_jars: bool = True) -> dict[str, int]:
+def audit(paths: list[Path], root: Path, *, require_jars: bool = True, experiment: bool = False) -> dict[str, int]:
     root = root.resolve()
     seen: set[Path] = set()
     counts: Counter[str] = Counter()
@@ -43,6 +43,8 @@ def audit(paths: list[Path], root: Path, *, require_jars: bool = True) -> dict[s
         libraries = {lib.get("name"): lib.get("desc", "") for lib in project.findall("lib")}
         for desc in libraries.values():
             if desc.startswith("jar#"):
+                if not experiment:
+                    raise VerificationError(f"JAR libraries are outside the default terminal target: {desc}")
                 parts = desc.split("#")
                 if len(parts) != 3 or parts[2] != "org.bitwright.bridge.BitwrightLibrary":
                     raise VerificationError(f"Unapproved host library: {desc}")
@@ -75,6 +77,8 @@ def audit(paths: list[Path], root: Path, *, require_jars: bool = True) -> dict[s
                     if name != "BitwrightCanvas":
                         raise VerificationError(f"Unapproved Java component: {name}")
                     counts["HOST:" + name] += 1
+                elif experiment and desc == "#I/O" and name == "RGB Video":
+                    counts[desc + "/" + name] += 1
                 elif name not in ALLOWED.get(desc, set()):
                     raise VerificationError(f"Prohibited component {desc}/{name} in {path}:{circuit.get('name')}")
                 else:

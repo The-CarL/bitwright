@@ -28,8 +28,16 @@ The basic terminal monitor prints a boot banner and provides help, memory
 dump/edit, and program run commands. Arithmetic and memory-test programs supply
 the v1 demonstrations.
 
-GUI memory loading occurs while stopped, followed by reset or a monitor jump into
-RAM. Automated tests use labelled RAM/ROM images through Logisim's TTY loading
+The monitor's run command places the requested entry address in X and uses
+`CALL run_trampoline`; the trampoline executes `JMP X`. A user program returns
+with `RET`, consuming the return address that CALL placed on the stack and
+resuming the monitor. User programs must balance their stack operations. The
+monitor's fixed scratch-memory allocation and permitted load range remain future
+firmware decisions; settle them before implementing the monitor. No CPU or
+monitor firmware exists in M0.
+
+GUI memory loading occurs while stopped, followed by reset or the monitor's run
+command. Automated tests use labelled RAM/ROM images through Logisim's TTY loading
 path. Use `v2.0 raw` images with deterministic full-bank padding and a separate
 manifest specifying bank origins and entry points.
 
@@ -51,9 +59,13 @@ M4 firmware depends on them. No CPU-visible device registers or FIFO exist in M0
 
 **Keyboard:** stock seven-bit ASCII Keyboard will feed a circuit-built 16-byte
 FIFO using permitted RAM. Circuit logic owns FIFO pointers, status, overflow,
-and acknowledgement. The stock host buffer is finite and does not export overflow;
-report that limitation separately from the circuit FIFO. Raw scan codes and
-key-up/key-down input are outside v1.
+and acknowledgement. Dequeue the stock Keyboard only when its head character is
+actually accepted into the circuit FIFO. A full FIFO applies backpressure; it
+must not consume and discard a character. Test that filling the FIFO, holding it
+full, and then draining it preserves the accepted character order. The stock host
+buffer is finite and does not export overflow; backpressure does not remove that
+separate host-buffer limitation. Raw scan codes and key-up/key-down input are
+outside v1.
 
 **Text monitor:** stock TTY renders seven-bit characters and accepts clear.
 It is the v1 monitor; there is no pixel-video or framebuffer subsystem. Keep
@@ -67,8 +79,9 @@ entry is proven, but M0 remains open pending the remaining checks.
 
 ## Preserved earlier experiment
 
-The current `circuits/bitwright.circ` and candidate ZIP still include stock RGB
-Video and the custom mouse canvas with its host queue. Their implementation and
-historical measurements are retained. They are not the new v1 target and have
-not yet been removed from the current artifact or package. Mouse/drag limitations
-are optional-extension findings, not v1 blockers.
+The earlier stock RGB Video and custom mouse canvas now have a separate entry at
+`experiments/mouse-canvas/workbench.circ`. Their implementation and historical
+measurements are retained, with explicit experiment tooling. The primary
+`circuits/bitwright.circ` contains only the focused Keyboard/TTY bench and native
+logic/storage foundations. Older ZIPs retain their original contents. Mouse/drag
+limitations remain optional-extension findings, not v1 blockers.

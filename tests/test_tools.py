@@ -99,5 +99,72 @@ class ArtifactTests(unittest.TestCase):
                     audit([main], root)
 
 
+class TerminalBoundaryTests(unittest.TestCase):
+    def test_default_denies_even_unused_existing_approved_bridge(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "bridge.jar").write_bytes(b"placeholder")
+            project = root / "main.circ"
+            project.write_text('<project source="5.0.0"><lib name="j" desc="jar#bridge.jar#org.bitwright.bridge.BitwrightLibrary"/><circuit name="main"/></project>')
+            for require in [True, False]:
+                with self.assertRaisesRegex(VerificationError, "outside the default terminal target"):
+                    audit([project], root, require_jars=require)
+            self.assertEqual(audit([project], root, experiment=True)["native_files"], 1)
+
+    def test_rgb_video_requires_explicit_experiment_policy(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            project = root / "main.circ"
+            project.write_text('<project source="5.0.0"><lib name="i" desc="#I/O"/><circuit name="main"><comp lib="i" name="RGB Video"/></circuit></project>')
+            with self.assertRaisesRegex(VerificationError, "Prohibited"):
+                audit([project], root)
+            self.assertEqual(audit([project], root, experiment=True)["#I/O/RGB Video"], 1)
+
+    def test_terminal_audit_follows_unused_library_to_hidden_bridge(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "main.circ").write_text('<project source="5.0.0"><lib name="child" desc="file#child.circ"/></project>')
+            (root / "child.circ").write_text('<project source="5.0.0"><lib name="j" desc="jar#bridge.jar#org.bitwright.bridge.BitwrightLibrary"/></project>')
+            with self.assertRaisesRegex(VerificationError, "outside the default terminal target"):
+                audit([root / "main.circ"], root)
+
+    def test_package_allowlist_works_without_optional_files_and_excludes_them(self):
+        from bw import CORE_FILES, package_files
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            for name in CORE_FILES:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fixture")
+            initial = package_files(root)
+            self.assertIn("images/memory/m0-ram.manifest.json", initial)
+            for name in ["build/bitwright-bridge.jar", "bridges/build.py", "experiments/mouse-canvas/workbench.circ", "tools/java/experiments/M0PixelSmoke.java", "tools/not-approved.py"]:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("must not ship")
+            self.assertEqual(package_files(root), initial)
+            self.assertFalse(any(name.endswith(".jar") or name.startswith(("bridges/", "experiments/")) for name in initial))
+
+    def test_package_is_deterministic_and_manifest_is_verified(self):
+        from bw import package_bytes, verify_package
+        import io
+        import zipfile
+        files = {"circuits/bitwright.circ": b"native circuit", "README.md": b"terminal package"}
+        first = package_bytes(files)
+        self.assertEqual(first, package_bytes(dict(reversed(list(files.items())))))
+        with tempfile.TemporaryDirectory() as folder:
+            archive = Path(folder) / "package.zip"
+            archive.write_bytes(first)
+            verify_package(archive)
+            with zipfile.ZipFile(io.BytesIO(first)) as source:
+                members = {entry.filename: source.read(entry.filename) for entry in source.infolist()}
+            members["bitwright-m0/README.md"] = b"tampered"
+            with zipfile.ZipFile(archive, "w") as output:
+                for name, value in members.items():
+                    output.writestr(name, value)
+            with self.assertRaisesRegex(VerificationError, "checksum mismatch"):
+                verify_package(archive)
+
+
 if __name__ == "__main__":
     unittest.main()

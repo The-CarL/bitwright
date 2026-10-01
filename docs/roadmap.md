@@ -3,8 +3,9 @@
 The approved scope was narrowed on **2026-10-01** to a CPU, keyboard, and text
 monitor/basic terminal using stock TTY. CPU/ISA/storage decisions remain intact.
 Mouse, pixel graphics, framebuffer scanning, and a custom Java bridge are outside
-v1. The older M0 canvas artifact and its evidence are retained; implementation of
-the focused Keyboard-to-TTY entry and package is still pending.
+v1. The older M0 canvas artifact and its evidence are retained separately under
+`experiments/mouse-canvas/`. The focused Keyboard-to-TTY entry is implemented;
+revised-package and desktop acceptance remain in progress.
 
 M0 remains the first gate. Resolve native-artifact, test-runner, storage/loading,
 and keyboard/TTY desktop issues before expanding the CPU. Mouse and drag findings
@@ -17,12 +18,17 @@ synchronized with this narrower scope; the deferred M5 issue remains open.
 | M1 / `v0.1` — Logic workbench | Interactive gate-built muxes, adders, registers, counters, flags, and ALU | Complete small truth tables; exhaustive 8-bit ALU operand pairs, with both carry inputs; reset/load/hold priority; carry/borrow/overflow; counter boundaries; recursive primitive audit |
 | M2 / `v0.2` — First stored program | CPU runs a ROM loop and writes a checked RAM result | Fetch/operands across byte boundaries; PC rollover; RAM/ROM decode including reserved addresses; one write per transaction; no reset/halt writes; bounded completion |
 | M3 / `v0.3` — Complete ISA and loading | Assembler programs use pointers, RAM, stack, and nested calls | Every encoding; flag behavior; nested CALL/RET and byte order; stack wrap; illegal opcode; assembler errors; reference-model comparison at retirement and for ordered writes |
-| M4 / `v0.4` — Terminal computer | Boot banner and basic terminal monitor with help, memory dump/edit, and run commands | Repeatable boot; keyboard FIFO empty/full/wrap/reset/overflow; explicit acknowledgement; ASCII parsing; load/edit/run RAM program; golden transcript |
+| M4 / `v0.4` — Terminal computer | Boot banner and basic terminal monitor with help, memory dump/edit, and run commands | Repeatable boot; keyboard FIFO empty/full/wrap/reset and backpressure without dropping its head; explicit acknowledgement; ASCII parsing; RAM program returns through CALL/trampoline/RET; golden transcript |
 | M5 / former `v0.5` — Deferred extension | Reserved for optional mouse/graphics work outside v1 | No v1 acceptance gate or blocking dependency; preserve earlier experiment and findings |
 | M6 / `v1.0` — Complete release | Download/open/run text computer, terminal monitor, arithmetic demo, and memory test | M4 accepted; regressions; clean-folder offline run; fresh-user instructions; platform smoke checks; measured performance and limitations; no required mouse/custom bridge |
 
 Dependencies are **M0 → M1 → M2 → M3 → M4 → M6**. M5 is deferred and does not block
 M6.
+
+Before M4 firmware, define the monitor scratch-memory allocation and allowed load
+range. The run command uses `CALL run_trampoline`, the trampoline uses `JMP X`,
+and a user program returns via `RET`. These are software conventions on the
+approved ISA, not new instructions or an implemented monitor.
 
 ## Amended M0 gate
 
@@ -45,10 +51,11 @@ refocus attempt produced no new text and has no established cause; investigate i
 against the focused bench. Passing the earlier Java/mouse tests is not a new M0
 requirement, and retaining them does not make M0 complete.
 
-The current entry `.circ`, generator, tests, and ZIP still implement the earlier
-canvas bench. This scope amendment changes the target and acceptance criteria,
-not those artifacts. Historical observations remain in the evidence report with
-a dated amendment identifying the current gate.
+The primary entry is now the focused stock Keyboard/TTY bench. Default tooling
+is being validated against that entry; the optional canvas has separate commands.
+Use the [focused evidence report](evidence/m0-keyboard-2026-10-01.md) for current
+acceptance. Older archives and the historical report retain their original
+contents; the historical mouse tests do not close the revised M0 gate.
 
 ## Testing and performance policy
 

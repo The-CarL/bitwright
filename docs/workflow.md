@@ -1,110 +1,102 @@
 # Source ownership and reproducibility
 
-## Current artifact and amended target
+## Primary bench and optional experiment
 
-The 2026-10-01 scope amendment makes v1 a keyboard/text-terminal computer through
-stock Keyboard and TTY. Mouse, pixel graphics, framebuffer, and custom Java bridge
-are outside v1. Existing circuits, bridge code, generators, tests, and packaging
-are preserved. In particular, the current entry `circuits/bitwright.circ` and
-`dist/bitwright-m0.zip` still contain and depend on the earlier canvas bridge.
-Their commands below describe that existing experiment, not an already adapted
-keyboard/TTY-only release.
+The primary entry `circuits/bitwright.circ` is the stock Keyboard-to-TTY bench.
+Its Run/Clear/Reset control is gate-built and it loads the native foundation
+library. No custom component JAR is required. CPU, monitor firmware, and the
+machine keyboard FIFO remain later milestones; M0 acceptance is still open.
 
-Adapting the entry and package is pending implementation under M0. The amended
-release must open using the pinned simulator without a required custom bridge;
-keep the optional historical experiment reproducible separately. Do not remove
-its code or overwrite its evidence merely because it is outside current scope.
+The earlier canvas is preserved at `experiments/mouse-canvas/workbench.circ`,
+with its Java source in `bridges/`. It has explicit experiment commands and is
+excluded from the primary package. Historical evidence retains its original
+observations. Older downloaded ZIPs and extracted copies do not change when the
+repository's entry is updated.
 
 ## One owner per artifact
 
-Use a mixed authoring workflow:
+- Manually authored educational leaves own their `.circ` content. Save/reopen
+  them with the pinned simulator; generators must not overwrite them.
+- Generator inputs own generated circuits and memory images. Commit inputs with
+  their native output and check deterministic regeneration.
+- Save disposable copies for simulator round-trip checks. Do not replace a
+  generator-owned file with a simulator rewrite.
+- XML parsing alone is insufficient: native load/save/reopen, behavioral tests,
+  recursive primitive auditing, and readable layouts matter.
 
-- Hand-authored educational leaves and layouts own their `.circ` content.
-  Save/reopen them with the pinned simulator; generators must not overwrite them.
-- Generator inputs own repetitive bit slices/assemblies and generated memory
-  images. Commit those inputs and the native generated `.circ` outputs, with a
-  visible generated-file marker and deterministic regeneration check.
-- Each circuit must be classified manual or generated; do not silently change its
-  owner during a simulator save. Save a temporary copy for generated round trips.
-- Native XML parsing is only one check. Load behavior, save/reopen behavior,
-  vectors, recursive primitive auditing, and readable visual layout also matter.
+The primary entry and `circuits/generated/*.circ` are generator-owned.
+`circuits/manual/foundations.circ` is manually owned. The optional canvas is also
+generated, using `tools/generate_circuits.py --experiment`; default generation
+does not include it. See the [circuit ownership guide](../circuits/README.md).
 
-Generated and manual equivalent fixtures in M0 are separate files so equivalence
-can be demonstrated without making the manual source an accidental output.
-The M0 entry project `circuits/bitwright.circ` is generated; only
-`circuits/manual/foundations.circ` is manually owned at this stage. The ownership
-table in [circuits/README.md](../circuits/README.md) identifies the actual sources.
+## Versions and development commands
 
-## Versions and packaging
+Pin Logisim-evolution **5.0.0**, with standalone JAR SHA-256
+`6b368e894742c04cc83aa9830f869bcab0190ede4df43ad6fecdb89b3a23a41c`.
+Development uses Python **3.12+** and JDK **21**; the tested versions in the lock
+are Python 3.12.12 and Temurin 21.0.12.1+1. Check the selected interpreter:
+`.python-version` does not change system Python by itself. Desktop installers
+bundle Java; readers need neither Python nor a compiler.
 
-Pin Logisim-evolution **5.0.0**. The official portable all-in-one JAR's validated
-SHA-256 is `6b368e894742c04cc83aa9830f869bcab0190ede4df43ad6fecdb89b3a23a41c`.
-The portable runtime and bridge API require Java 21 or newer. Building the bridge
-requires JDK **21**, enforced for reproducible bytecode. M0 uses Temurin
-`21.0.12.1+1`; the Python minimum is **3.12**, with `3.12.12` tested. The repository
-toolchain lock and its verification tooling are authoritative for exact download
-assets/checksums. Desktop installers
-bundle Java. Revalidate circuits, vectors, stock keyboard/TTY behavior, and any
-preserved experimental bridge linkage in a dedicated compatibility change before
-updating the simulator pin.
+From the repository root, `python3 tools/bw.py fetch` downloads and verifies the
+simulator; `doctor` checks the selected tools. The default `test`, `render`,
+`audit`, `run`, and `package` commands target the primary terminal bench and
+do not build or require the optional bridge. Linux vector execution initializes
+Swing, so use `xvfb-run -a python3 tools/bw.py test`.
 
-Use relative library references. The existing experimental M0 candidate ZIP contains
-native circuits/libraries, a prebuilt bridge JAR with its source, development
-tools/tests, memory images, documentation, the toolchain lock, and
-`SHA256SUMS.json`. The amended keyboard/TTY package must not require the custom
-canvas JAR; that packaging change has not happened yet. Final release packaging
-must also include applicable license notices. Readers install the pinned free desktop simulator,
-extract the ZIP, open the entry `.circ`, reset, and enable ticks. Readers do not
-need Python or a Java compiler; runtime code requires no network access.
+Default rendering/tests compile development-only `RenderCircuit` and
+`M0TextSmoke` adapters against the pinned simulator. They are test tooling, not
+runtime components. Native painter images are artifacts, not desktop screenshots.
+Revalidate these version-specific adapters, circuit behavior, and stock
+Keyboard/TTY integration in a dedicated simulator-upgrade change.
 
-The default build directory is `build/` at the repository root, not `bridges/build/`.
-The bridge is `build/bitwright-bridge.jar`; test logs and native round-trip copies
-go to `build/test-results/` and `build/roundtrip/`. `tools/bw.py package` writes
-`dist/bitwright-m0.zip`. It builds/audits and tests relocated native/JAR loading;
-it does not replace `tools/bw.py test` or real desktop acceptance.
+A full source checkout also offers explicit `bridge`, `test-experiment`,
+`audit-experiment`, and `run-experiment` commands for the historical canvas.
+Build its bridge before `run-experiment`; `test-experiment` builds it itself.
+These commands are not primary-v1 prerequisites and are unavailable from the
+focused package because their optional sources are excluded.
 
-`python3 tools/bw.py render` compiles the development-only native renderer and
-pixel smoke check for the preserved experiment against the pinned simulator. It exercises stock RGB Video
-through the circuit's input pins and writes native circuit renders under
-`build/renders/`. The full test command also runs these checks. These are rendered
-artifacts using Logisim's component painters, not desktop screenshots or evidence
-of real mouse routing. These graphics checks remain in the current test command
-but are not amended v1 acceptance requirements. The pixel checker reads the stock
-display's private image field; simulator upgrades must revalidate this explicitly
-pinned adapter while the optional experiment remains supported.
+## Packaging and offline evidence
 
-Do not claim a release works offline until it has been extracted into a different
-directory and exercised without network access. Do not bundle an unverified
-simulator binary or publish an unsupported-platform claim from one-machine tests.
+`python3 tools/bw.py package` writes `dist/bitwright-m0.zip`, rooted at
+`bitwright-m0/`. An explicit source allowlist includes primary native circuits,
+memory images, architecture/docs, Python tooling/tests, and development text/render
+adapter source. It excludes `bridges/`, `experiments/`, custom JARs, and the
+pixel-test adapter. `SHA256SUMS.json` covers the archive's files.
 
-## Artifact organization
+Packaging checks deterministic bytes, ZIP integrity and manifest coverage, then
+extracts into a fresh path for native audit, RAM loading, and terminal echo.
+It does not replace the full test suite or desktop acceptance. Rebuild the archive
+after source/documentation changes so its manifest describes the current candidate.
 
-| Directory | Saved artifacts |
-| --- | --- |
-| `architecture/` | Markdown contracts and machine-readable opcode specification |
-| `circuits/` | Native `.circ` projects/libraries, with explicit manual/generated ownership |
-| `tools/` | Standard-library Python tooling, generator, test runner, future assembler/model |
-| `bridges/` | Preserved optional mouse-canvas Java experiment and build configuration |
-| `software/` | Future boot/runtime/demo `.asm` sources |
-| `images/memory/` | `v2.0 raw` byte images, listings, symbols, bank-origin manifests |
-| `tests/` | Text vectors, native harnesses, assembly tests, expected traces |
-| `docs/` | Journal, SVG diagrams, screenshots, evidence reports, user/developer guidance |
+After packaging, `python3 tools/bw.py offline-test` checks an extracted candidate
+with per-process network denial: macOS `sandbox-exec` or a Linux network namespace
+when available. A reachable local-socket negative control checks enforcement before
+RAM and terminal tests run under the same restriction. Unsupported or denied
+isolation fails without claiming an offline pass. This command does not change
+the host's global network settings, and its command-line result does not by itself
+prove desktop focus, save/reopen, or GUI behavior under isolation.
 
-Add future directories when they have content. Avoid placeholder artifacts that
-could be mistaken for a completed subsystem. Memory images are fully padded and
-deterministic; origins and entry points belong in an explicit load manifest.
+Readers install the pinned free desktop simulator, extract the whole primary ZIP,
+open `circuits/bitwright.circ`, and use the documented controls. The runtime has
+no required custom bridge. Final releases must include applicable license notices.
+A release is not complete until the fresh-folder offline desktop path is verified.
 
-## Review and acceptance
+Build outputs stay at repository-root `build/`: test logs in `test-results/`,
+native round trips in `roundtrip/`, and primary renders in `renders/`.
+The optional bridge remains `build/bitwright-bridge.jar`; experiment renders use
+`build/experiment-renders/`. Do not commit caches or compiled artifacts.
 
-Every issue names an observable demonstration, dependencies, meaningful tests,
-and closure evidence. Check acceptance before closing an issue; a merged change
-does not by itself prove a desktop integration gate. Keep evidence factual and
-identify tests that still require another platform or real host interaction.
+## Acceptance and later artifacts
 
-M0 acceptance now covers native/test/storage/loading and stock Keyboard-to-TTY
-desktop behavior, including refocus, pause/resume, reset, save/reopen, offline
-operation, and relocation. Mouse/drag findings are not blockers. M0 remains open;
-the v1 release path is M0 through M4, then M6, with M5 deferred outside that chain.
+M0 covers native/test/storage/loading and stock Keyboard-to-TTY desktop behavior:
+refocus, pause/resume, reset, save/reopen, offline operation, and relocation.
+Track actual results in the [focused report](evidence/m0-keyboard-2026-10-01.md).
+Mouse/drag findings do not block v1. The release chain is M0 through M4, then M6;
+M5 stays deferred.
 
-The eventual reference CPU model is test tooling, never a hidden implementation
-of the delivered computer. Gate logic remains visible and inspectable in `.circ`.
+Later `software/` contains boot/runtime/demo assembly; `images/memory/` holds
+deterministic byte images, listings, symbols, and bank-origin manifests. The
+reference CPU model is test tooling, never the delivered CPU. Check each issue's
+observable demonstration and evidence before closing it; implemented code or a
+merged change alone does not prove a desktop gate.

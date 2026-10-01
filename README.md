@@ -19,24 +19,24 @@ and the real stock Keyboard-to-TTY path, including refocus, pause/reset,
 save/reopen, relocation, and offline operation. Mouse/drag findings no longer
 block v1. See [acceptance criteria](docs/roadmap.md) and the
 [synchronized backlog scope notes](docs/backlog.md).
-The [M0 evidence report](docs/evidence/m0-2026-10-01.md) separates passing automated
-checks from desktop acceptance still to complete.
+The [focused M0 evidence report](docs/evidence/m0-keyboard-2026-10-01.md) separates
+revised-artifact checks from desktop acceptance still to complete. The
+[historical report](docs/evidence/m0-2026-10-01.md) preserves the earlier experiment.
 
-## Open the existing experimental bench
+## Open the keyboard terminal bench
 
-The current `circuits/bitwright.circ` and `dist/bitwright-m0.zip` still contain
-the earlier mouse/pixel experiment and require its prebuilt bridge. They have
-not yet been reduced to the new keyboard/TTY target. Their source and evidence
-are preserved as an optional historical experiment; the scope amendment does
-not change circuits, generators, tests, or packaging.
+The primary `circuits/bitwright.circ` now contains stock Keyboard, TTY, and
+gate-built transfer control, with no custom component library. It is a direct
+input/output feasibility bench, not the future CPU or boot monitor. Native
+fixture libraries remain inspectable in the project tree.
 
 Use the free desktop [Logisim-evolution 5.0.0](https://github.com/logisim-evolution/logisim-evolution/releases/tag/v5.0.0).
-Desktop installers include Java. A packaged bench includes its prebuilt Java
-bridge; extract the entire archive, open `circuits/bitwright.circ`, select the Poke
-tool, reset simulation, and enable ticks. Keep the relative folders together.
-[Workbench controls](circuits/README.md) explain keyboard, stock pixels, mouse
-painting, packet retention, and reset. A release is not claimed until its
-acceptance evidence is complete.
+Desktop installers include Java. Extract a fresh primary package, open
+`circuits/bitwright.circ`, select the Poke tool, enable ticks, and click Keyboard
+to type. Use Run=1, Clear=0, Reset=0 for normal input. Run=0 holds queued input;
+Clear clears TTY while retaining queued input; Reset clears both. See
+[workbench controls](circuits/README.md) for details. Readers need no custom JAR
+or compiler. M0 acceptance and a completed release are not yet claimed.
 
 For a source checkout, use Python 3.12+ and JDK 21. Check `python3 --version`
 first: `.python-version` does not change the system interpreter by itself. If
@@ -47,7 +47,6 @@ if it is not the default. From the repository root:
 ```sh
 python3 tools/bw.py fetch
 python3 tools/bw.py doctor
-python3 tools/bw.py bridge
 python3 tools/bw.py test
 python3 tools/bw.py run
 ```
@@ -58,10 +57,16 @@ need a display (for example, run `xvfb-run -a python3 tools/bw.py test`). Packag
 with `python3 tools/bw.py package`; the candidate archive is
 `dist/bitwright-m0.zip`. End users of that archive need neither Python nor a compiler.
 
-Build outputs live at the repository root: `build/bitwright-bridge.jar`,
-`build/test-results/`, `build/roundtrip/`, and `build/renders/`. The default simulator cache is
+Build outputs live at the repository root: `build/test-results/`,
+`build/roundtrip/`, and `build/renders/`. The default simulator cache is
 `.cache/logisim-evolution-5.0.0-all.jar`; `LOGISIM_JAR` can point to an existing
 official JAR, which is still checked against the pinned SHA-256.
+
+The preserved mouse/canvas experiment under `experiments/mouse-canvas/` is
+available in a source checkout, with its own entry and explicit commands; it is
+omitted from the primary ZIP. Older candidate
+ZIPs or extracted copies retain their original canvas contents; build/extract a
+fresh primary package rather than assuming those copies have changed.
 
 ## Approved v1 target
 
@@ -107,7 +112,8 @@ scope; M5 remains open as a deferred optional extension.
 | `architecture/` | Approved primitive policy, ISA, memory map, timing, and device target |
 | `circuits/` | Manual native sources and deterministic generated `.circ` outputs |
 | `tools/` | Circuit generation, testing, auditing, and packaging; later assembler/model |
-| `bridges/` | Preserved optional mouse-canvas experiment; still used by the existing bench |
+| `experiments/` | Optional historical mouse/canvas entry, separate from the primary package |
+| `bridges/` | Java source used only by the optional mouse/canvas experiment |
 | `images/memory/` | Loadable `v2.0 raw` images and manifests |
 | `tests/` | Vectors, harnesses, and tool tests |
 | `docs/` | Roadmap, evidence, workflow, and build journal |

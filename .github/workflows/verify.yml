@@ -48,11 +48,15 @@ jobs:
 
       - name: Run native integration and contract tests
         # Vector mode initializes Swing even though it exits after its tests.
-        # Desktop mouse/focus acceptance remains a separately recorded manual check.
+        # Desktop keyboard focus acceptance remains a separately recorded manual check.
         run: xvfb-run -a python3 tools/bw.py test
 
       - name: Build and verify relocated offline package
         run: python3 tools/bw.py package
+
+      - name: Verify extracted package with networking denied
+        # unshare confines the denial to test child processes; host networking is unchanged.
+        run: sudo --preserve-env=JAVA_HOME,PATH python3 tools/bw.py offline-test
 
       - name: Upload verified package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
