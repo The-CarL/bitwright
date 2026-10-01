@@ -47,7 +47,17 @@ modal warning and hanging vector execution. Renaming the primary tunnel to
 `SysClock` fixed it: the saved project passed recursive library audit, sixteen
 control and eight workbench vectors, and exact Keyboard-to-TTY echo. The native
 serializer rebased the foundation library path correctly. The earlier package
-result does not cover this change, so the final archive must be rebuilt.
+was then rebuilt with that fix, and package validation plus the macOS
+network-denied RAM/echo tests passed again. Archive checksums must still be
+regenerated after documentation changes; no fixed release hash is claimed here.
+
+The focused implementation is recorded in
+[commit b41aa8c](https://github.com/The-CarL/bitwright/commit/b41aa8c686a5019dba54bcc71c2507213031dfa8).
+[Linux CI run 36884557736](https://github.com/The-CarL/bitwright/actions/runs/36884557736)
+passed the full native suite and produced package bytes identical to the macOS
+snapshot. Its elevated offline step selected Java 17 rather than the required
+Java 21 and failed on class-version compatibility. Explicit runtime-environment
+forwarding is being corrected and awaits CI verification; the run is not green.
 
 The [focused M0 evidence ledger](../evidence/m0-keyboard-2026-10-01.md) records
 the remaining revised-artifact tests and desktop checks as they become available.

@@ -56,7 +56,12 @@ jobs:
 
       - name: Verify extracted package with networking denied
         # unshare confines the denial to test child processes; host networking is unchanged.
-        run: sudo --preserve-env=JAVA_HOME,PATH python3 tools/bw.py offline-test
+        # Assign JAVA_HOME after sudo: the runner's sudo environment selects system JDK 17.
+        run: |
+          bitwright_python="$(command -v python3)"
+          sudo env JAVA_HOME="${JAVA_HOME:?setup-java must export JAVA_HOME}" \
+            LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" PYTHONUNBUFFERED=1 \
+            "$bitwright_python" tools/bw.py offline-test
 
       - name: Upload verified package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
