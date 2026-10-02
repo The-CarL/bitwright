@@ -1,0 +1,89 @@
+name: Verify gate-built computer
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PYTHONUNBUFFERED: '1'
+    steps:
+      # Immutable revisions resolved from the official action release tags.
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12.12'
+
+      - name: Set up tested JDK
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          # Adoptium's exact semver for Temurin 21.0.12.1+1 (JEP 322 patch build).
+          java-version: '21.0.12+101.0.LTS'
+          architecture: x64
+
+      - name: Install virtual display
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends xvfb xauth
+
+      - name: Fetch checksum-pinned simulator
+        run: python3 tools/bw.py fetch
+
+      - name: Build gate computer and host adapter
+        run: |
+          python3 tools/bw.py check-generated
+          python3 tools/bw.py build
+          git diff --exit-code
+
+      - name: Run native integration and contract tests
+        # Vector mode initializes Swing even though it exits after its tests.
+        # Desktop keyboard focus acceptance remains a separately recorded manual check.
+        run: xvfb-run -a python3 tools/bw.py test
+
+      - name: Build and verify relocated offline package
+        run: python3 tools/bw.py package
+
+      - name: Verify extracted package with networking denied
+        # unshare confines the denial to test child processes; host networking is unchanged.
+        # Assign JAVA_HOME after sudo: the runner's sudo environment selects system JDK 17.
+        run: |
+          bitwright_python="$(command -v python3)"
+          sudo env JAVA_HOME="${JAVA_HOME:?setup-java must export JAVA_HOME}" \
+            LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}" PYTHONUNBUFFERED=1 \
+            "$bitwright_python" tools/bw.py offline-test
+
+      - name: Upload verified package
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bitwright-apple1-package
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload simulator evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bitwright-apple1-test-results
+          path: |
+            build/test-results/
+            build/renders/
+          if-no-files-found: ignore
+          retention-days: 14

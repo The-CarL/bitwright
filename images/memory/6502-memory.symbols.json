@@ -1,0 +1,15 @@
+{
+  "BUFFER": 2048,
+  "CHECKSUM": 815,
+  "FILL": 771,
+  "MESSAGE": 828,
+  "NEWLINE": 65030,
+  "PRINT": 794,
+  "PROMPT": 65283,
+  "PTR": 130,
+  "PUTC": 65519,
+  "PUTHEX": 65027,
+  "RESULT": 805,
+  "START": 768,
+  "SUM_LOOP": 819
+}

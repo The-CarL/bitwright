@@ -1,0 +1,10 @@
+# Native front-panel reset/control wiring; no keyboard events are injected in vector mode.
+Run Clear Reset Available ASCII[7] Transfer TtyClear KeyboardClear ClockSeen
+0 0 0 0 0x00 0 0 0 <DC>
+0 0 1 0 0x00 0 1 1 <DC>
+0 1 0 0 0x00 0 1 0 <DC>
+0 1 1 0 0x00 0 1 1 <DC>
+1 0 0 0 0x00 0 0 0 <DC>
+1 0 1 0 0x00 0 1 1 <DC>
+1 1 0 0 0x00 0 1 0 <DC>
+1 1 1 0 0x00 0 1 1 <DC>

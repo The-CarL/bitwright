@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="5.0.0" version="1.0">
+  This file is intended to be loaded by Logisim-evolution v5.0.0(https://github.com/logisim-evolution/).
+
+  <lib desc="#Wiring" name="0">
+    <tool name="Pin">
+      <a name="appearance" val="classic"/>
+    </tool>
+  </lib>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Memory" name="2"/>
+  <lib desc="#I/O" name="3"/>
+  <lib desc="#Base" name="4"/>
+  <main name="LoadBit"/>
+  <options>
+    <a name="gateUndefined" val="ignore"/>
+    <a name="simlimit" val="10000"/>
+    <a name="simrand" val="0"/>
+  </options>
+  <mappings>
+    <tool map="Button3" name="Menu Tool"/>
+  </mappings>
+  <toolbar>
+    <tool name="Poke Tool"/>
+    <tool name="Edit Tool"/>
+    <tool name="Wiring Tool"/>
+    <tool name="Text Tool"/>
+  </toolbar>
+  <circuit name="GateAnd">
+    <a name="circuit" val="GateAnd"/>
+    <comp lib="0" loc="(100,100)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="A"/>
+    </comp>
+    <comp lib="0" loc="(100,150)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="B"/>
+    </comp>
+    <comp lib="0" loc="(140,100)" name="Tunnel">
+      <a name="label" val="A"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(140,150)" name="Tunnel">
+      <a name="label" val="B"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(240,110)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="A"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(240,130)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="B"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(330,120)" name="Tunnel">
+      <a name="label" val="Y"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(390,120)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Y"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(430,120)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Y"/>
+      <a name="labelloc" val="east"/>
+      <a name="type" val="output"/>
+    </comp>
+    <comp lib="1" loc="(300,120)" name="AND Gate">
+      <a name="size" val="30"/>
+    </comp>
+    <comp lib="4" loc="(70,50)" name="Text">
+      <a name="font" val="SansSerif plain 14"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="M0 / AND truth table"/>
+    </comp>
+    <wire from="(100,100)" to="(140,100)"/>
+    <wire from="(100,150)" to="(140,150)"/>
+    <wire from="(240,110)" to="(270,110)"/>
+    <wire from="(240,130)" to="(270,130)"/>
+    <wire from="(300,120)" to="(330,120)"/>
+    <wire from="(390,120)" to="(430,120)"/>
+  </circuit>
+  <circuit name="LoadBit">
+    <a name="circuit" val="LoadBit"/>
+    <a name="simulationFrequency" val="1.0"/>
+    <comp lib="0" loc="(100,140)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Data"/>
+    </comp>
+    <comp lib="0" loc="(100,200)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Load"/>
+    </comp>
+    <comp lib="0" loc="(100,260)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Clock"/>
+    </comp>
+    <comp lib="0" loc="(100,320)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="Reset"/>
+    </comp>
+    <comp lib="0" loc="(140,140)" name="Tunnel">
+      <a name="label" val="Data"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(140,200)" name="Tunnel">
+      <a name="label" val="Load"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(140,260)" name="Tunnel">
+      <a name="label" val="Clock"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(140,320)" name="Tunnel">
+      <a name="label" val="Reset"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(250,200)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Load"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(330,200)" name="Tunnel">
+      <a name="label" val="Hold"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(400,150)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Data"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(400,170)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Load"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(400,250)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Q"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(400,270)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Hold"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(490,160)" name="Tunnel">
+      <a name="label" val="New"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(490,260)" name="Tunnel">
+      <a name="label" val="Old"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(580,210)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="New"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(580,230)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Old"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(670,220)" name="Tunnel">
+      <a name="label" val="D"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(730,210)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Clock"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(730,230)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="D"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(770,240)" name="Constant">
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(820,270)" name="Tunnel">
+      <a name="label" val="Reset"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(830,210)" name="Tunnel">
+      <a name="label" val="Q"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(930,210)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="Q"/>
+      <a name="labelfont" val="SansSerif plain 12"/>
+    </comp>
+    <comp lib="0" loc="(970,210)" name="Pin">
+      <a name="appearance" val="classic"/>
+      <a name="facing" val="west"/>
+      <a name="label" val="Q"/>
+      <a name="labelloc" val="east"/>
+      <a name="type" val="output"/>
+    </comp>
+    <comp lib="1" loc="(300,200)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
+    <comp lib="1" loc="(460,160)" name="AND Gate">
+      <a name="size" val="30"/>
+    </comp>
+    <comp lib="1" loc="(460,260)" name="AND Gate">
+      <a name="size" val="30"/>
+    </comp>
+    <comp lib="1" loc="(640,220)" name="OR Gate">
+      <a name="size" val="30"/>
+    </comp>
+    <comp lib="2" loc="(800,210)" name="D Flip-Flop">
+      <a name="appearance" val="classic"/>
+      <a name="label" val="bit"/>
+    </comp>
+    <comp lib="4" loc="(610,370)" name="Text">
+      <a name="font" val="SansSerif plain 14"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="Use the ordinary Clock input pin in sequential vectors."/>
+    </comp>
+    <comp lib="4" loc="(70,50)" name="Text">
+      <a name="font" val="SansSerif plain 14"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="M0 / one bit: Q(next) = Load ? Data : Q; async Reset wins"/>
+    </comp>
+    <comp lib="4" loc="(70,80)" name="Text">
+      <a name="font" val="SansSerif plain 14"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="Selection uses NOT / AND / OR gates. Only the single-bit D flip-flop is a foundation."/>
+    </comp>
+    <wire from="(100,140)" to="(140,140)"/>
+    <wire from="(100,200)" to="(140,200)"/>
+    <wire from="(100,260)" to="(140,260)"/>
+    <wire from="(100,320)" to="(140,320)"/>
+    <wire from="(250,200)" to="(280,200)"/>
+    <wire from="(300,200)" to="(330,200)"/>
+    <wire from="(400,150)" to="(430,150)"/>
+    <wire from="(400,170)" to="(430,170)"/>
+    <wire from="(400,250)" to="(430,250)"/>
+    <wire from="(400,270)" to="(430,270)"/>
+    <wire from="(460,160)" to="(490,160)"/>
+    <wire from="(460,260)" to="(490,260)"/>
+    <wire from="(580,210)" to="(610,210)"/>
+    <wire from="(580,230)" to="(610,230)"/>
+    <wire from="(640,220)" to="(670,220)"/>
+    <wire from="(730,210)" to="(760,210)"/>
+    <wire from="(730,230)" to="(760,230)"/>
+    <wire from="(790,240)" to="(790,270)"/>
+    <wire from="(790,270)" to="(820,270)"/>
+    <wire from="(800,210)" to="(830,210)"/>
+    <wire from="(930,210)" to="(970,210)"/>
+  </circuit>
+</project>

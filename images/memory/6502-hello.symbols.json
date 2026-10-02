@@ -1,0 +1,9 @@
+{
+  "GETC": 65024,
+  "MESSAGE": 795,
+  "PRINT": 770,
+  "PROMPT": 65283,
+  "PUTC": 65519,
+  "START": 768,
+  "WAIT_KEY": 781
+}

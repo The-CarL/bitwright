@@ -1,0 +1,752 @@
+{
+  "cpu": "NMOS 6502 functional, not cycle accurate",
+  "opcodes": {
+    "00": {
+      "mnemonic": "BRK",
+      "mode": "imp"
+    },
+    "01": {
+      "mnemonic": "ORA",
+      "mode": "indx"
+    },
+    "05": {
+      "mnemonic": "ORA",
+      "mode": "zp"
+    },
+    "06": {
+      "mnemonic": "ASL",
+      "mode": "zp"
+    },
+    "08": {
+      "mnemonic": "PHP",
+      "mode": "imp"
+    },
+    "09": {
+      "mnemonic": "ORA",
+      "mode": "imm"
+    },
+    "0A": {
+      "mnemonic": "ASL",
+      "mode": "acc"
+    },
+    "0D": {
+      "mnemonic": "ORA",
+      "mode": "abs"
+    },
+    "0E": {
+      "mnemonic": "ASL",
+      "mode": "abs"
+    },
+    "10": {
+      "mnemonic": "BPL",
+      "mode": "rel"
+    },
+    "11": {
+      "mnemonic": "ORA",
+      "mode": "indy"
+    },
+    "15": {
+      "mnemonic": "ORA",
+      "mode": "zpx"
+    },
+    "16": {
+      "mnemonic": "ASL",
+      "mode": "zpx"
+    },
+    "18": {
+      "mnemonic": "CLC",
+      "mode": "imp"
+    },
+    "19": {
+      "mnemonic": "ORA",
+      "mode": "absy"
+    },
+    "1D": {
+      "mnemonic": "ORA",
+      "mode": "absx"
+    },
+    "1E": {
+      "mnemonic": "ASL",
+      "mode": "absx"
+    },
+    "20": {
+      "mnemonic": "JSR",
+      "mode": "abs"
+    },
+    "21": {
+      "mnemonic": "AND",
+      "mode": "indx"
+    },
+    "24": {
+      "mnemonic": "BIT",
+      "mode": "zp"
+    },
+    "25": {
+      "mnemonic": "AND",
+      "mode": "zp"
+    },
+    "26": {
+      "mnemonic": "ROL",
+      "mode": "zp"
+    },
+    "28": {
+      "mnemonic": "PLP",
+      "mode": "imp"
+    },
+    "29": {
+      "mnemonic": "AND",
+      "mode": "imm"
+    },
+    "2A": {
+      "mnemonic": "ROL",
+      "mode": "acc"
+    },
+    "2C": {
+      "mnemonic": "BIT",
+      "mode": "abs"
+    },
+    "2D": {
+      "mnemonic": "AND",
+      "mode": "abs"
+    },
+    "2E": {
+      "mnemonic": "ROL",
+      "mode": "abs"
+    },
+    "30": {
+      "mnemonic": "BMI",
+      "mode": "rel"
+    },
+    "31": {
+      "mnemonic": "AND",
+      "mode": "indy"
+    },
+    "35": {
+      "mnemonic": "AND",
+      "mode": "zpx"
+    },
+    "36": {
+      "mnemonic": "ROL",
+      "mode": "zpx"
+    },
+    "38": {
+      "mnemonic": "SEC",
+      "mode": "imp"
+    },
+    "39": {
+      "mnemonic": "AND",
+      "mode": "absy"
+    },
+    "3D": {
+      "mnemonic": "AND",
+      "mode": "absx"
+    },
+    "3E": {
+      "mnemonic": "ROL",
+      "mode": "absx"
+    },
+    "40": {
+      "mnemonic": "RTI",
+      "mode": "imp"
+    },
+    "41": {
+      "mnemonic": "EOR",
+      "mode": "indx"
+    },
+    "45": {
+      "mnemonic": "EOR",
+      "mode": "zp"
+    },
+    "46": {
+      "mnemonic": "LSR",
+      "mode": "zp"
+    },
+    "48": {
+      "mnemonic": "PHA",
+      "mode": "imp"
+    },
+    "49": {
+      "mnemonic": "EOR",
+      "mode": "imm"
+    },
+    "4A": {
+      "mnemonic": "LSR",
+      "mode": "acc"
+    },
+    "4C": {
+      "mnemonic": "JMP",
+      "mode": "abs"
+    },
+    "4D": {
+      "mnemonic": "EOR",
+      "mode": "abs"
+    },
+    "4E": {
+      "mnemonic": "LSR",
+      "mode": "abs"
+    },
+    "50": {
+      "mnemonic": "BVC",
+      "mode": "rel"
+    },
+    "51": {
+      "mnemonic": "EOR",
+      "mode": "indy"
+    },
+    "55": {
+      "mnemonic": "EOR",
+      "mode": "zpx"
+    },
+    "56": {
+      "mnemonic": "LSR",
+      "mode": "zpx"
+    },
+    "58": {
+      "mnemonic": "CLI",
+      "mode": "imp"
+    },
+    "59": {
+      "mnemonic": "EOR",
+      "mode": "absy"
+    },
+    "5D": {
+      "mnemonic": "EOR",
+      "mode": "absx"
+    },
+    "5E": {
+      "mnemonic": "LSR",
+      "mode": "absx"
+    },
+    "60": {
+      "mnemonic": "RTS",
+      "mode": "imp"
+    },
+    "61": {
+      "mnemonic": "ADC",
+      "mode": "indx"
+    },
+    "65": {
+      "mnemonic": "ADC",
+      "mode": "zp"
+    },
+    "66": {
+      "mnemonic": "ROR",
+      "mode": "zp"
+    },
+    "68": {
+      "mnemonic": "PLA",
+      "mode": "imp"
+    },
+    "69": {
+      "mnemonic": "ADC",
+      "mode": "imm"
+    },
+    "6A": {
+      "mnemonic": "ROR",
+      "mode": "acc"
+    },
+    "6C": {
+      "mnemonic": "JMP",
+      "mode": "ind"
+    },
+    "6D": {
+      "mnemonic": "ADC",
+      "mode": "abs"
+    },
+    "6E": {
+      "mnemonic": "ROR",
+      "mode": "abs"
+    },
+    "70": {
+      "mnemonic": "BVS",
+      "mode": "rel"
+    },
+    "71": {
+      "mnemonic": "ADC",
+      "mode": "indy"
+    },
+    "75": {
+      "mnemonic": "ADC",
+      "mode": "zpx"
+    },
+    "76": {
+      "mnemonic": "ROR",
+      "mode": "zpx"
+    },
+    "78": {
+      "mnemonic": "SEI",
+      "mode": "imp"
+    },
+    "79": {
+      "mnemonic": "ADC",
+      "mode": "absy"
+    },
+    "7D": {
+      "mnemonic": "ADC",
+      "mode": "absx"
+    },
+    "7E": {
+      "mnemonic": "ROR",
+      "mode": "absx"
+    },
+    "81": {
+      "mnemonic": "STA",
+      "mode": "indx"
+    },
+    "84": {
+      "mnemonic": "STY",
+      "mode": "zp"
+    },
+    "85": {
+      "mnemonic": "STA",
+      "mode": "zp"
+    },
+    "86": {
+      "mnemonic": "STX",
+      "mode": "zp"
+    },
+    "88": {
+      "mnemonic": "DEY",
+      "mode": "imp"
+    },
+    "8A": {
+      "mnemonic": "TXA",
+      "mode": "imp"
+    },
+    "8C": {
+      "mnemonic": "STY",
+      "mode": "abs"
+    },
+    "8D": {
+      "mnemonic": "STA",
+      "mode": "abs"
+    },
+    "8E": {
+      "mnemonic": "STX",
+      "mode": "abs"
+    },
+    "90": {
+      "mnemonic": "BCC",
+      "mode": "rel"
+    },
+    "91": {
+      "mnemonic": "STA",
+      "mode": "indy"
+    },
+    "94": {
+      "mnemonic": "STY",
+      "mode": "zpx"
+    },
+    "95": {
+      "mnemonic": "STA",
+      "mode": "zpx"
+    },
+    "96": {
+      "mnemonic": "STX",
+      "mode": "zpy"
+    },
+    "98": {
+      "mnemonic": "TYA",
+      "mode": "imp"
+    },
+    "99": {
+      "mnemonic": "STA",
+      "mode": "absy"
+    },
+    "9A": {
+      "mnemonic": "TXS",
+      "mode": "imp"
+    },
+    "9D": {
+      "mnemonic": "STA",
+      "mode": "absx"
+    },
+    "A0": {
+      "mnemonic": "LDY",
+      "mode": "imm"
+    },
+    "A1": {
+      "mnemonic": "LDA",
+      "mode": "indx"
+    },
+    "A2": {
+      "mnemonic": "LDX",
+      "mode": "imm"
+    },
+    "A4": {
+      "mnemonic": "LDY",
+      "mode": "zp"
+    },
+    "A5": {
+      "mnemonic": "LDA",
+      "mode": "zp"
+    },
+    "A6": {
+      "mnemonic": "LDX",
+      "mode": "zp"
+    },
+    "A8": {
+      "mnemonic": "TAY",
+      "mode": "imp"
+    },
+    "A9": {
+      "mnemonic": "LDA",
+      "mode": "imm"
+    },
+    "AA": {
+      "mnemonic": "TAX",
+      "mode": "imp"
+    },
+    "AC": {
+      "mnemonic": "LDY",
+      "mode": "abs"
+    },
+    "AD": {
+      "mnemonic": "LDA",
+      "mode": "abs"
+    },
+    "AE": {
+      "mnemonic": "LDX",
+      "mode": "abs"
+    },
+    "B0": {
+      "mnemonic": "BCS",
+      "mode": "rel"
+    },
+    "B1": {
+      "mnemonic": "LDA",
+      "mode": "indy"
+    },
+    "B4": {
+      "mnemonic": "LDY",
+      "mode": "zpx"
+    },
+    "B5": {
+      "mnemonic": "LDA",
+      "mode": "zpx"
+    },
+    "B6": {
+      "mnemonic": "LDX",
+      "mode": "zpy"
+    },
+    "B8": {
+      "mnemonic": "CLV",
+      "mode": "imp"
+    },
+    "B9": {
+      "mnemonic": "LDA",
+      "mode": "absy"
+    },
+    "BA": {
+      "mnemonic": "TSX",
+      "mode": "imp"
+    },
+    "BC": {
+      "mnemonic": "LDY",
+      "mode": "absx"
+    },
+    "BD": {
+      "mnemonic": "LDA",
+      "mode": "absx"
+    },
+    "BE": {
+      "mnemonic": "LDX",
+      "mode": "absy"
+    },
+    "C0": {
+      "mnemonic": "CPY",
+      "mode": "imm"
+    },
+    "C1": {
+      "mnemonic": "CMP",
+      "mode": "indx"
+    },
+    "C4": {
+      "mnemonic": "CPY",
+      "mode": "zp"
+    },
+    "C5": {
+      "mnemonic": "CMP",
+      "mode": "zp"
+    },
+    "C6": {
+      "mnemonic": "DEC",
+      "mode": "zp"
+    },
+    "C8": {
+      "mnemonic": "INY",
+      "mode": "imp"
+    },
+    "C9": {
+      "mnemonic": "CMP",
+      "mode": "imm"
+    },
+    "CA": {
+      "mnemonic": "DEX",
+      "mode": "imp"
+    },
+    "CC": {
+      "mnemonic": "CPY",
+      "mode": "abs"
+    },
+    "CD": {
+      "mnemonic": "CMP",
+      "mode": "abs"
+    },
+    "CE": {
+      "mnemonic": "DEC",
+      "mode": "abs"
+    },
+    "D0": {
+      "mnemonic": "BNE",
+      "mode": "rel"
+    },
+    "D1": {
+      "mnemonic": "CMP",
+      "mode": "indy"
+    },
+    "D5": {
+      "mnemonic": "CMP",
+      "mode": "zpx"
+    },
+    "D6": {
+      "mnemonic": "DEC",
+      "mode": "zpx"
+    },
+    "D8": {
+      "mnemonic": "CLD",
+      "mode": "imp"
+    },
+    "D9": {
+      "mnemonic": "CMP",
+      "mode": "absy"
+    },
+    "DD": {
+      "mnemonic": "CMP",
+      "mode": "absx"
+    },
+    "DE": {
+      "mnemonic": "DEC",
+      "mode": "absx"
+    },
+    "E0": {
+      "mnemonic": "CPX",
+      "mode": "imm"
+    },
+    "E1": {
+      "mnemonic": "SBC",
+      "mode": "indx"
+    },
+    "E4": {
+      "mnemonic": "CPX",
+      "mode": "zp"
+    },
+    "E5": {
+      "mnemonic": "SBC",
+      "mode": "zp"
+    },
+    "E6": {
+      "mnemonic": "INC",
+      "mode": "zp"
+    },
+    "E8": {
+      "mnemonic": "INX",
+      "mode": "imp"
+    },
+    "E9": {
+      "mnemonic": "SBC",
+      "mode": "imm"
+    },
+    "EA": {
+      "mnemonic": "NOP",
+      "mode": "imp"
+    },
+    "EC": {
+      "mnemonic": "CPX",
+      "mode": "abs"
+    },
+    "ED": {
+      "mnemonic": "SBC",
+      "mode": "abs"
+    },
+    "EE": {
+      "mnemonic": "INC",
+      "mode": "abs"
+    },
+    "F0": {
+      "mnemonic": "BEQ",
+      "mode": "rel"
+    },
+    "F1": {
+      "mnemonic": "SBC",
+      "mode": "indy"
+    },
+    "F5": {
+      "mnemonic": "SBC",
+      "mode": "zpx"
+    },
+    "F6": {
+      "mnemonic": "INC",
+      "mode": "zpx"
+    },
+    "F8": {
+      "mnemonic": "SED",
+      "mode": "imp"
+    },
+    "F9": {
+      "mnemonic": "SBC",
+      "mode": "absy"
+    },
+    "FD": {
+      "mnemonic": "SBC",
+      "mode": "absx"
+    },
+    "FE": {
+      "mnemonic": "INC",
+      "mode": "absx"
+    }
+  },
+  "storage": "All CPU state is built from cross-coupled gates, master/slave latches and gate-selected register banks; no built-in flip-flops or memory.",
+  "primitive_counts_expanded": {
+    "#Base/Text": 164,
+    "#Gates/AND Gate": 1849,
+    "#Gates/NOT Gate": 1136,
+    "#Gates/OR Gate": 1657,
+    "#Gates/XOR Gate": 371,
+    "#Wiring/Constant": 662,
+    "#Wiring/Pin": 1535,
+    "#Wiring/Splitter": 855,
+    "#Wiring/Tunnel": 28378
+  },
+  "builtin_flip_flops": 0,
+  "logic_gate_count_expanded": 7200,
+  "gate_component_count_expanded": 5013,
+  "simulation_optimizations": [
+    "Register-bank clock enables use a gate latch open only during the low clock phase; no combinational clock gating.",
+    "GateDff retains a named inspectable master/slave cell with direct gate wiring inside; GateLatch remains the bank-enable latch.",
+    "Repeated selection masks use bitwise AND/OR gate symbols of width 4/8/16. Each lane is a Boolean gate; ripple arithmetic and storage remain one-bit gate constructions."
+  ],
+  "reset": {
+    "A": 0,
+    "X": 0,
+    "Y": 0,
+    "SP": 253,
+    "P": 36,
+    "PC": "little-endian FFFC/FFFD vector"
+  },
+  "bus": {
+    "read": "DataIn captured on rising SysClock; read side effects must occur on that same edge after the old data is presented.",
+    "write": "Address/DataOut/Write settle after rising edge; external memory commits once on falling edge.",
+    "Sync": "High in fetch state; inspect stable register values at the instruction boundary."
+  },
+  "limitations": [
+    "Functional NMOS documented instructions, not transistor-level or cycle-accurate NMOS bus behavior. No dummy writes; unsupported undocumented opcodes enter Fault.",
+    "Reset intentionally initializes A/X/Y=0, SP=FD and P=24 every time, unlike physical NMOS reset/power-up behavior.",
+    "IRQ and NMI are active-high logical requests. NMI transitions are sampled on rising SysClock and retained until an instruction boundary; sub-cycle pulses are not guaranteed.",
+    "Gate storage is verified with Logisim-evolution 5.0.0 deterministic propagation. Other simulator versions/timing randomness require revalidation.",
+    "Implemented opcode manifest is not a claim of exhaustive formal correctness; native smoke and independent differential results are separate evidence."
+  ],
+  "decode_bits": {
+    "Mnemonics": {
+      "0": "ADC",
+      "1": "AND",
+      "2": "ASL",
+      "3": "BCC",
+      "4": "BCS",
+      "5": "BEQ",
+      "6": "BIT",
+      "7": "BMI",
+      "8": "BNE",
+      "9": "BPL",
+      "10": "BRK",
+      "11": "BVC",
+      "12": "BVS",
+      "13": "CLC",
+      "14": "CLD",
+      "15": "CLI",
+      "16": "CLV",
+      "17": "CMP",
+      "18": "CPX",
+      "19": "CPY",
+      "20": "DEC",
+      "21": "DEX",
+      "22": "DEY",
+      "23": "EOR",
+      "24": "INC",
+      "25": "INX",
+      "26": "INY",
+      "27": "JMP",
+      "28": "JSR",
+      "29": "LDA",
+      "30": "LDX",
+      "31": "LDY",
+      "32": "LSR",
+      "33": "NOP",
+      "34": "ORA",
+      "35": "PHA",
+      "36": "PHP",
+      "37": "PLA",
+      "38": "PLP",
+      "39": "ROL",
+      "40": "ROR",
+      "41": "RTI",
+      "42": "RTS",
+      "43": "SBC",
+      "44": "SEC",
+      "45": "SED",
+      "46": "SEI",
+      "47": "STA",
+      "48": "STX",
+      "49": "STY",
+      "50": "TAX",
+      "51": "TAY",
+      "52": "TSX",
+      "53": "TXA",
+      "54": "TXS",
+      "55": "TYA"
+    },
+    "AddressModes": {
+      "0": "abs",
+      "1": "absx",
+      "2": "absy",
+      "3": "acc",
+      "4": "imm",
+      "5": "imp",
+      "6": "ind",
+      "7": "indx",
+      "8": "indy",
+      "9": "rel",
+      "10": "zp",
+      "11": "zpx",
+      "12": "zpy"
+    }
+  },
+  "states": {
+    "0": "ResetLow",
+    "1": "ResetHigh",
+    "2": "Fetch",
+    "3": "Decode",
+    "4": "Operand",
+    "5": "AbsoluteHigh",
+    "6": "IndirectLow",
+    "7": "IndirectHigh",
+    "8": "ReadOperand",
+    "9": "Execute",
+    "10": "WriteOperand",
+    "11": "Push",
+    "12": "Pull",
+    "13": "CallHigh",
+    "14": "CallLow",
+    "15": "ReturnLow",
+    "16": "ReturnHigh",
+    "17": "ReturnFlags",
+    "18": "InterruptLow",
+    "19": "InterruptHigh",
+    "20": "BreakHigh",
+    "21": "BreakLow",
+    "22": "BreakFlags",
+    "23": "VectorLow",
+    "24": "VectorHigh",
+    "25": "Fault"
+  }
+}

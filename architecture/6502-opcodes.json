@@ -1,0 +1,1063 @@
+{
+  "architecture": "original NMOS 6502 documented instructions",
+  "source": "https://syncopate.us/books/Synertek6502ProgrammingManual.html#B",
+  "encodings": [
+    {
+      "opcode": 0,
+      "hex": "00",
+      "mnemonic": "BRK",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 1,
+      "hex": "01",
+      "mnemonic": "ORA",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 5,
+      "hex": "05",
+      "mnemonic": "ORA",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 6,
+      "hex": "06",
+      "mnemonic": "ASL",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 8,
+      "hex": "08",
+      "mnemonic": "PHP",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 9,
+      "hex": "09",
+      "mnemonic": "ORA",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 10,
+      "hex": "0A",
+      "mnemonic": "ASL",
+      "mode": "acc",
+      "bytes": 1
+    },
+    {
+      "opcode": 13,
+      "hex": "0D",
+      "mnemonic": "ORA",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 14,
+      "hex": "0E",
+      "mnemonic": "ASL",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 16,
+      "hex": "10",
+      "mnemonic": "BPL",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 17,
+      "hex": "11",
+      "mnemonic": "ORA",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 21,
+      "hex": "15",
+      "mnemonic": "ORA",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 22,
+      "hex": "16",
+      "mnemonic": "ASL",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 24,
+      "hex": "18",
+      "mnemonic": "CLC",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 25,
+      "hex": "19",
+      "mnemonic": "ORA",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 29,
+      "hex": "1D",
+      "mnemonic": "ORA",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 30,
+      "hex": "1E",
+      "mnemonic": "ASL",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 32,
+      "hex": "20",
+      "mnemonic": "JSR",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 33,
+      "hex": "21",
+      "mnemonic": "AND",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 36,
+      "hex": "24",
+      "mnemonic": "BIT",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 37,
+      "hex": "25",
+      "mnemonic": "AND",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 38,
+      "hex": "26",
+      "mnemonic": "ROL",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 40,
+      "hex": "28",
+      "mnemonic": "PLP",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 41,
+      "hex": "29",
+      "mnemonic": "AND",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 42,
+      "hex": "2A",
+      "mnemonic": "ROL",
+      "mode": "acc",
+      "bytes": 1
+    },
+    {
+      "opcode": 44,
+      "hex": "2C",
+      "mnemonic": "BIT",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 45,
+      "hex": "2D",
+      "mnemonic": "AND",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 46,
+      "hex": "2E",
+      "mnemonic": "ROL",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 48,
+      "hex": "30",
+      "mnemonic": "BMI",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 49,
+      "hex": "31",
+      "mnemonic": "AND",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 53,
+      "hex": "35",
+      "mnemonic": "AND",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 54,
+      "hex": "36",
+      "mnemonic": "ROL",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 56,
+      "hex": "38",
+      "mnemonic": "SEC",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 57,
+      "hex": "39",
+      "mnemonic": "AND",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 61,
+      "hex": "3D",
+      "mnemonic": "AND",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 62,
+      "hex": "3E",
+      "mnemonic": "ROL",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 64,
+      "hex": "40",
+      "mnemonic": "RTI",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 65,
+      "hex": "41",
+      "mnemonic": "EOR",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 69,
+      "hex": "45",
+      "mnemonic": "EOR",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 70,
+      "hex": "46",
+      "mnemonic": "LSR",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 72,
+      "hex": "48",
+      "mnemonic": "PHA",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 73,
+      "hex": "49",
+      "mnemonic": "EOR",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 74,
+      "hex": "4A",
+      "mnemonic": "LSR",
+      "mode": "acc",
+      "bytes": 1
+    },
+    {
+      "opcode": 76,
+      "hex": "4C",
+      "mnemonic": "JMP",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 77,
+      "hex": "4D",
+      "mnemonic": "EOR",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 78,
+      "hex": "4E",
+      "mnemonic": "LSR",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 80,
+      "hex": "50",
+      "mnemonic": "BVC",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 81,
+      "hex": "51",
+      "mnemonic": "EOR",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 85,
+      "hex": "55",
+      "mnemonic": "EOR",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 86,
+      "hex": "56",
+      "mnemonic": "LSR",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 88,
+      "hex": "58",
+      "mnemonic": "CLI",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 89,
+      "hex": "59",
+      "mnemonic": "EOR",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 93,
+      "hex": "5D",
+      "mnemonic": "EOR",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 94,
+      "hex": "5E",
+      "mnemonic": "LSR",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 96,
+      "hex": "60",
+      "mnemonic": "RTS",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 97,
+      "hex": "61",
+      "mnemonic": "ADC",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 101,
+      "hex": "65",
+      "mnemonic": "ADC",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 102,
+      "hex": "66",
+      "mnemonic": "ROR",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 104,
+      "hex": "68",
+      "mnemonic": "PLA",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 105,
+      "hex": "69",
+      "mnemonic": "ADC",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 106,
+      "hex": "6A",
+      "mnemonic": "ROR",
+      "mode": "acc",
+      "bytes": 1
+    },
+    {
+      "opcode": 108,
+      "hex": "6C",
+      "mnemonic": "JMP",
+      "mode": "ind",
+      "bytes": 3
+    },
+    {
+      "opcode": 109,
+      "hex": "6D",
+      "mnemonic": "ADC",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 110,
+      "hex": "6E",
+      "mnemonic": "ROR",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 112,
+      "hex": "70",
+      "mnemonic": "BVS",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 113,
+      "hex": "71",
+      "mnemonic": "ADC",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 117,
+      "hex": "75",
+      "mnemonic": "ADC",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 118,
+      "hex": "76",
+      "mnemonic": "ROR",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 120,
+      "hex": "78",
+      "mnemonic": "SEI",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 121,
+      "hex": "79",
+      "mnemonic": "ADC",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 125,
+      "hex": "7D",
+      "mnemonic": "ADC",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 126,
+      "hex": "7E",
+      "mnemonic": "ROR",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 129,
+      "hex": "81",
+      "mnemonic": "STA",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 132,
+      "hex": "84",
+      "mnemonic": "STY",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 133,
+      "hex": "85",
+      "mnemonic": "STA",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 134,
+      "hex": "86",
+      "mnemonic": "STX",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 136,
+      "hex": "88",
+      "mnemonic": "DEY",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 138,
+      "hex": "8A",
+      "mnemonic": "TXA",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 140,
+      "hex": "8C",
+      "mnemonic": "STY",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 141,
+      "hex": "8D",
+      "mnemonic": "STA",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 142,
+      "hex": "8E",
+      "mnemonic": "STX",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 144,
+      "hex": "90",
+      "mnemonic": "BCC",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 145,
+      "hex": "91",
+      "mnemonic": "STA",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 148,
+      "hex": "94",
+      "mnemonic": "STY",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 149,
+      "hex": "95",
+      "mnemonic": "STA",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 150,
+      "hex": "96",
+      "mnemonic": "STX",
+      "mode": "zpy",
+      "bytes": 2
+    },
+    {
+      "opcode": 152,
+      "hex": "98",
+      "mnemonic": "TYA",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 153,
+      "hex": "99",
+      "mnemonic": "STA",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 154,
+      "hex": "9A",
+      "mnemonic": "TXS",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 157,
+      "hex": "9D",
+      "mnemonic": "STA",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 160,
+      "hex": "A0",
+      "mnemonic": "LDY",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 161,
+      "hex": "A1",
+      "mnemonic": "LDA",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 162,
+      "hex": "A2",
+      "mnemonic": "LDX",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 164,
+      "hex": "A4",
+      "mnemonic": "LDY",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 165,
+      "hex": "A5",
+      "mnemonic": "LDA",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 166,
+      "hex": "A6",
+      "mnemonic": "LDX",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 168,
+      "hex": "A8",
+      "mnemonic": "TAY",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 169,
+      "hex": "A9",
+      "mnemonic": "LDA",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 170,
+      "hex": "AA",
+      "mnemonic": "TAX",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 172,
+      "hex": "AC",
+      "mnemonic": "LDY",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 173,
+      "hex": "AD",
+      "mnemonic": "LDA",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 174,
+      "hex": "AE",
+      "mnemonic": "LDX",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 176,
+      "hex": "B0",
+      "mnemonic": "BCS",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 177,
+      "hex": "B1",
+      "mnemonic": "LDA",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 180,
+      "hex": "B4",
+      "mnemonic": "LDY",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 181,
+      "hex": "B5",
+      "mnemonic": "LDA",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 182,
+      "hex": "B6",
+      "mnemonic": "LDX",
+      "mode": "zpy",
+      "bytes": 2
+    },
+    {
+      "opcode": 184,
+      "hex": "B8",
+      "mnemonic": "CLV",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 185,
+      "hex": "B9",
+      "mnemonic": "LDA",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 186,
+      "hex": "BA",
+      "mnemonic": "TSX",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 188,
+      "hex": "BC",
+      "mnemonic": "LDY",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 189,
+      "hex": "BD",
+      "mnemonic": "LDA",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 190,
+      "hex": "BE",
+      "mnemonic": "LDX",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 192,
+      "hex": "C0",
+      "mnemonic": "CPY",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 193,
+      "hex": "C1",
+      "mnemonic": "CMP",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 196,
+      "hex": "C4",
+      "mnemonic": "CPY",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 197,
+      "hex": "C5",
+      "mnemonic": "CMP",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 198,
+      "hex": "C6",
+      "mnemonic": "DEC",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 200,
+      "hex": "C8",
+      "mnemonic": "INY",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 201,
+      "hex": "C9",
+      "mnemonic": "CMP",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 202,
+      "hex": "CA",
+      "mnemonic": "DEX",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 204,
+      "hex": "CC",
+      "mnemonic": "CPY",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 205,
+      "hex": "CD",
+      "mnemonic": "CMP",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 206,
+      "hex": "CE",
+      "mnemonic": "DEC",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 208,
+      "hex": "D0",
+      "mnemonic": "BNE",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 209,
+      "hex": "D1",
+      "mnemonic": "CMP",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 213,
+      "hex": "D5",
+      "mnemonic": "CMP",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 214,
+      "hex": "D6",
+      "mnemonic": "DEC",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 216,
+      "hex": "D8",
+      "mnemonic": "CLD",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 217,
+      "hex": "D9",
+      "mnemonic": "CMP",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 221,
+      "hex": "DD",
+      "mnemonic": "CMP",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 222,
+      "hex": "DE",
+      "mnemonic": "DEC",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 224,
+      "hex": "E0",
+      "mnemonic": "CPX",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 225,
+      "hex": "E1",
+      "mnemonic": "SBC",
+      "mode": "indx",
+      "bytes": 2
+    },
+    {
+      "opcode": 228,
+      "hex": "E4",
+      "mnemonic": "CPX",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 229,
+      "hex": "E5",
+      "mnemonic": "SBC",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 230,
+      "hex": "E6",
+      "mnemonic": "INC",
+      "mode": "zp",
+      "bytes": 2
+    },
+    {
+      "opcode": 232,
+      "hex": "E8",
+      "mnemonic": "INX",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 233,
+      "hex": "E9",
+      "mnemonic": "SBC",
+      "mode": "imm",
+      "bytes": 2
+    },
+    {
+      "opcode": 234,
+      "hex": "EA",
+      "mnemonic": "NOP",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 236,
+      "hex": "EC",
+      "mnemonic": "CPX",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 237,
+      "hex": "ED",
+      "mnemonic": "SBC",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 238,
+      "hex": "EE",
+      "mnemonic": "INC",
+      "mode": "abs",
+      "bytes": 3
+    },
+    {
+      "opcode": 240,
+      "hex": "F0",
+      "mnemonic": "BEQ",
+      "mode": "rel",
+      "bytes": 2
+    },
+    {
+      "opcode": 241,
+      "hex": "F1",
+      "mnemonic": "SBC",
+      "mode": "indy",
+      "bytes": 2
+    },
+    {
+      "opcode": 245,
+      "hex": "F5",
+      "mnemonic": "SBC",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 246,
+      "hex": "F6",
+      "mnemonic": "INC",
+      "mode": "zpx",
+      "bytes": 2
+    },
+    {
+      "opcode": 248,
+      "hex": "F8",
+      "mnemonic": "SED",
+      "mode": "imp",
+      "bytes": 1
+    },
+    {
+      "opcode": 249,
+      "hex": "F9",
+      "mnemonic": "SBC",
+      "mode": "absy",
+      "bytes": 3
+    },
+    {
+      "opcode": 253,
+      "hex": "FD",
+      "mnemonic": "SBC",
+      "mode": "absx",
+      "bytes": 3
+    },
+    {
+      "opcode": 254,
+      "hex": "FE",
+      "mnemonic": "INC",
+      "mode": "absx",
+      "bytes": 3
+    }
+  ]
+}
