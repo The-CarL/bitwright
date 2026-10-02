@@ -100,6 +100,42 @@ class ArtifactTests(unittest.TestCase):
 
 
 class TerminalBoundaryTests(unittest.TestCase):
+    def test_relocated_harness_cannot_fall_back_to_checkout_host_library(self):
+        import os
+        from unittest.mock import patch
+        from bw import native_tools
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            bridge = root / "build/bitwright-console.jar"
+            with patch("bw.verify_jar", return_value=Path("/simulator.jar")), \
+                 patch("bw.java_path", return_value="java"), patch("bw.checked") as invoke:
+                with self.assertRaisesRegex(VerificationError, "Missing console library in tested package"):
+                    native_tools(root)
+                invoke.assert_not_called()
+                bridge.parent.mkdir()
+                bridge.write_bytes(b"fixture")
+                command = native_tools(root)
+                classpath = command[command.index("-cp") + 1].split(os.pathsep)
+                self.assertEqual(classpath, ["/simulator.jar", str(bridge), str(root / "build/tools")])
+                compile_args = invoke.call_args.args[0]
+                self.assertIn(str(root / "tools/java/MachineSmoke.java"), compile_args)
+
+    def test_console_allows_only_declared_host_and_cpu_requires_gate_storage(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "console.jar").write_bytes(b"fixture")
+            project = root / "console.circ"
+            text = '<project source="5.0.0"><lib name="j" desc="jar#console.jar#org.bitwright.console.ConsoleLibrary"/><circuit name="main"><comp lib="j" name="ConsoleHost"/></circuit></project>'
+            project.write_text(text)
+            self.assertEqual(audit([project], root)["HOST:ConsoleHost"], 1)
+            project.write_text(text.replace('name="ConsoleHost"', 'name="HostCpu"'))
+            with self.assertRaisesRegex(VerificationError, "Unapproved Java component"):
+                audit([project], root)
+            cpu = root / "cpu6502.circ"
+            cpu.write_text('<project source="5.0.0"><lib name="m" desc="#Memory"/><circuit name="Cpu6502"><comp lib="m" name="D Flip-Flop"/></circuit></project>')
+            with self.assertRaisesRegex(VerificationError, "gate-built"):
+                audit([cpu], root)
+
     def test_default_denies_even_unused_existing_approved_bridge(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -143,7 +179,8 @@ class TerminalBoundaryTests(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text("must not ship")
             self.assertEqual(package_files(root), initial)
-            self.assertFalse(any(name.endswith(".jar") or name.startswith(("bridges/", "experiments/")) for name in initial))
+            self.assertIn("build/bitwright-console.jar", initial)
+            self.assertFalse(any(name.startswith("experiments/") or name=="build/bitwright-bridge.jar" for name in initial))
 
     def test_package_is_deterministic_and_manifest_is_verified(self):
         from bw import package_bytes, verify_package
@@ -158,7 +195,8 @@ class TerminalBoundaryTests(unittest.TestCase):
             verify_package(archive)
             with zipfile.ZipFile(io.BytesIO(first)) as source:
                 members = {entry.filename: source.read(entry.filename) for entry in source.infolist()}
-            members["bitwright-m0/README.md"] = b"tampered"
+            from bw import PACKAGE_NAME
+            members[PACKAGE_NAME+"/README.md"] = b"tampered"
             with zipfile.ZipFile(archive, "w") as output:
                 for name, value in members.items():
                     output.writestr(name, value)

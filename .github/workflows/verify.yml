@@ -1,4 +1,4 @@
-name: Verify M0
+name: Verify gate-built computer
 
 on:
   push:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 35
     env:
       PYTHONUNBUFFERED: '1'
     steps:
@@ -46,6 +46,12 @@ jobs:
       - name: Fetch checksum-pinned simulator
         run: python3 tools/bw.py fetch
 
+      - name: Build gate computer and host adapter
+        run: |
+          python3 tools/bw.py check-generated
+          python3 tools/bw.py build
+          git diff --exit-code
+
       - name: Run native integration and contract tests
         # Vector mode initializes Swing even though it exits after its tests.
         # Desktop keyboard focus acceptance remains a separately recorded manual check.
@@ -66,7 +72,7 @@ jobs:
       - name: Upload verified package
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: bitwright-m0-package
+          name: bitwright-apple1-package
           path: dist/*.zip
           if-no-files-found: error
           retention-days: 14
@@ -75,7 +81,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: bitwright-m0-test-results
+          name: bitwright-apple1-test-results
           path: |
             build/test-results/
             build/renders/

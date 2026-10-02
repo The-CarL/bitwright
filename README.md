@@ -1,128 +1,119 @@
 # Bitwright
 
-**From gates to a terminal: building an inspectable 8-bit computer in Logisim-evolution.**
+**An Apple-1-inspired computer built from inspectable gates in Logisim-evolution.**
 
-This personal project revisits an unfinished computer engineering undergraduate
-ambition: build a complete computer from primitive circuits, with a CPU, memory,
-keyboard, and text monitor. The v1 user interface is a basic terminal through
-Logisim's stock TTY component.
+Bitwright revisits an unfinished computer-engineering undergraduate ambition:
+build a computer from the ground up, then write assembly programs and watch them
+execute. The approved target is original NMOS 6502 instruction behavior, ASCII
+keyboard input and a circuit-built text terminal. Mouse input is outside this
+target.
 
-## Current status
+## What is implemented
 
-The approved v1 scope was narrowed on **2026-10-01** to keyboard, CPU, and a text
-monitor/basic terminal. Mouse input, pixel graphics, a framebuffer, and a custom
-Java bridge are outside v1. The CPU, ISA, RAM/ROM, and primitive policy remain.
+The primary native project connects a gate-built 6502 core, 4 KiB RAM, firmware
+ROM, a keyboard interface and a 40x24 terminal. The CPU's storage is built from
+gate latches and flip-flops; it contains no built-in memory components. Native
+subcircuits expose the ALU, decoder, registers, arithmetic and control. The
+console uses disclosed single-bit D flip-flops, character RAM and glyph ROM.
 
-**M0, the feasibility bench, is still in progress; this is not yet a CPU or
-complete computer.** Its gate is native logic/storage/loading, reliable tests,
-and the real stock Keyboard-to-TTY path, including refocus, pause/reset,
-save/reopen, relocation, and offline operation. Mouse/drag findings no longer
-block v1. See [acceptance criteria](docs/roadmap.md) and the
-[synchronized backlog scope notes](docs/backlog.md).
-The [focused M0 evidence report](docs/evidence/m0-keyboard-2026-10-01.md) separates
-revised-artifact checks from desktop acceptance still to complete. The
-[historical report](docs/evidence/m0-2026-10-01.md) preserves the earlier experiment.
+An original boot monitor reads characters, deposits/examines RAM and starts
+programs. Assembly tools produce machine bytes and `.mon` files. The host file
+feeder only supplies ASCII; firmware running on the circuit CPU loads RAM.
+The host display only retains circuit-generated pixel words. Cursor, font lookup,
+wrapping, scrolling and pixel generation are circuits.
 
-## Open the keyboard terminal bench
+This is a development candidate, not a cycle-perfect Apple-1 replica. The
+[architecture](architecture/apple1-direction.md) and
+[CPU manifest](circuits/generated/cpu6502-manifest.json) define the fidelity
+boundary. The [roadmap](docs/roadmap.md) separates implementation from release
+acceptance. Earlier M0 reports and the old echo bench remain historical fixtures.
 
-The primary `circuits/bitwright.circ` now contains stock Keyboard, TTY, and
-gate-built transfer control, with no custom component library. It is a direct
-input/output feasibility bench, not the future CPU or boot monitor. Native
-fixture libraries remain inspectable in the project tree.
+## Open and run
 
-Use the free desktop [Logisim-evolution 5.0.0](https://github.com/logisim-evolution/logisim-evolution/releases/tag/v5.0.0).
-Desktop installers include Java. Extract a fresh primary package, open
-`circuits/bitwright.circ`, select the Poke tool, enable ticks, and click Keyboard
-to type. Use Run=1, Clear=0, Reset=0 for normal input. Run=0 holds queued input;
-Clear clears TTY while retaining queued input; Reset clears both. See
-[workbench controls](circuits/README.md) for details. Readers need no custom JAR
-or compiler. M0 acceptance and a completed release are not yet claimed.
+Use **Logisim-evolution 5.0.0**. Extract the complete `bitwright-apple1.zip` package
+and keep its folders together; it includes the prebuilt console JAR. Open
+`circuits/bitwright.circ`.
 
-For a source checkout, use Python 3.12+ and JDK 21. Check `python3 --version`
-first: `.python-version` does not change the system interpreter by itself. If
-`python3` is older than 3.12, select the pinned interpreter with your version
-manager or replace `python3` below with its full path. Set `JAVA_HOME` to the JDK
-if it is not the default. From the repository root:
+1. Select the Poke tool. **Reset starts at 1** to initialize gate storage; set it to 0.
+2. Enable automatic ticks in the Simulation menu.
+3. Right-click the **Apple1Console instance on the main circuit** and choose
+   **View Apple1Console**. This enters the running instance; opening its library
+   definition would show separate, unconnected state.
+4. Wait for the `BITWRIGHT` banner and backslash prompt.
+5. Click **Load ASCII .mon file** and select `images/memory/6502-sum.mon`.
+6. The monitor loads the program and runs it. When prompted, type `9`.
+   It computes `SUM (HEX) = 2D` (45 decimal), then returns to the monitor.
+
+Try `6502-hello.mon` and `6502-memory.mon` without changing the circuit. Program
+files include a run command. Reset clears queued input and the display but
+preserves program RAM. Wait for the prompt before loading a file.
+
+Monitor commands accept either case. Backspace removes a buffered character but
+only moves the visible cursor left within the current row; it does not erase the
+old glyph or cross a wrapped row. Escape abandons the current command.
+
+The clock setting requests 65,536 ticks/s; actual speed depends on the simulator
+and machine. Do not interpret this setting as a measured CPU frequency.
+On the reference Apple M4, the native full-machine test measured **449 cycles/s**;
+loading `hello` took **2 minutes** and `sum` took **3 minutes**. The visible queue
+can therefore remain busy for a while. Native key-to-render timing was about
+224–240 ms; desktop event/repaint latency is still unverified.
+See the [implementation evidence and limitations](docs/evidence/apple1-2026-10-01.md).
+See [console controls and limitations](bridges/console/README.md).
+End users need neither Python nor a compiler. The simulator and package run offline.
+
+## Build from source
+
+Development requires Python 3.12+ and JDK 21. Select them explicitly if your
+system defaults differ; set `JAVA_HOME` to the JDK. From this checkout:
 
 ```sh
 python3 tools/bw.py fetch
-python3 tools/bw.py doctor
+python3 tools/bw.py build
 python3 tools/bw.py test
 python3 tools/bw.py run
 ```
 
-`fetch` downloads and verifies the pinned simulator JAR. Subsequent builds/tests
-use the cached JAR; the desktop bench itself needs no network. Linux vector tests
-need a display (for example, run `xvfb-run -a python3 tools/bw.py test`). Package
-with `python3 tools/bw.py package`; the candidate archive is
-`dist/bitwright-m0.zip`. End users of that archive need neither Python nor a compiler.
+`fetch` verifies the pinned simulator checksum. `LOGISIM_JAR` can select an
+existing official JAR, which is checked against the same checksum. Subsequent
+build/test/run commands need no network. Linux vector tests require a display,
+for example `xvfb-run -a python3 tools/bw.py test`.
 
-Build outputs live at the repository root: `build/test-results/`,
-`build/roundtrip/`, and `build/renders/`. The default simulator cache is
-`.cache/logisim-evolution-5.0.0-all.jar`; `LOGISIM_JAR` can point to an existing
-official JAR, which is still checked against the pinned SHA-256.
+To write your own program, copy a demo and assemble it:
 
-The preserved mouse/canvas experiment under `experiments/mouse-canvas/` is
-available in a source checkout, with its own entry and explicit commands; it is
-omitted from the primary ZIP. Older candidate
-ZIPs or extracted copies retain their original canvas contents; build/extract a
-fresh primary package rather than assuming those copies have changed.
+```sh
+python3 tools/asm6502.py software/demos/sum.asm --output build/my-sum --entry start
+```
 
-## Approved v1 target
+Load `build/my-sum.mon` through the console. The assembler also writes a binary,
+Logisim image, listing, symbols and an address/checksum manifest. Demo programs
+start at `0300` and return using `JMP $FF03`; the monitor source documents its ABI.
 
-- 8-bit accumulator datapath, 16-bit byte addresses, 32 KiB RAM, and 16 KiB ROM.
-- Gate-built ALU, adders, selectors, registers, counters, decoding, and hardwired
-  instruction control. Single-bit D flip-flops and bulk RAM/ROM are allowed.
-- A manageable [51-instruction ISA](architecture/isa.md), stack/subroutines,
-  assembler, boot monitor, and example programs.
-- Polling memory-mapped keyboard I/O with circuit-owned buffering and an ASCII
-  text monitor through stock TTY.
-- A basic command terminal with help, memory dump/edit, and run commands, plus
-  arithmetic and memory-test programs.
-- Native `.circ` projects that readers can inspect and single-step.
-
-Stock Keyboard and TTY provide host character input and text rendering; the CPU,
-device registers, and machine FIFO remain circuit logic. No custom Java bridge
-is required by the new v1 target.
-Read the [primitive policy](architecture/primitives.md), [memory/I/O contract](architecture/memory-and-io.md),
-and [clock/control contract](architecture/control.md) for the exact boundary.
-
-## Build in demonstrable steps
-
-| Milestone | Result |
-| --- | --- |
-| M0 / `v0.0.1` | Native storage/test/loading and Keyboard-to-TTY feasibility bench |
-| M1 / `v0.1` | Verified primitive logic and ALU workbench |
-| M2 / `v0.2` | First ROM program executing on the circuit CPU |
-| M3 / `v0.3` | Complete ISA, assembler, stack, and loading |
-| M4 / `v0.4` | Boot monitor and interactive terminal |
-| M5 / former `v0.5` | Deferred optional mouse/graphics extension, outside v1 |
-| M6 / `v1.0` | Reproducible offline computer and demonstration release |
-
-The [roadmap](docs/roadmap.md) gives meaningful tests and acceptance evidence for
-each stage. M6 depends on M4, with no M5 dependency. The
-[milestones](https://github.com/The-CarL/bitwright/milestones) and
-[issues](https://github.com/The-CarL/bitwright/issues) now reflect the narrowed
-scope; M5 remains open as a deferred optional extension.
+`python3 tools/bw.py package` creates `dist/bitwright-apple1.zip` and tests
+relocation. `offline-test` verifies per-process network denial and boots the
+extracted computer. `check-generated` detects stale artifacts.
+`run-bench` opens the earlier Keyboard-to-TTY fixture.
 
 ## Repository and source ownership
 
-| Location | Contents |
+| Location | Authoritative content |
 | --- | --- |
-| `architecture/` | Approved primitive policy, ISA, memory map, timing, and device target |
-| `circuits/` | Manual native sources and deterministic generated `.circ` outputs |
-| `tools/` | Circuit generation, testing, auditing, and packaging; later assembler/model |
-| `experiments/` | Optional historical mouse/canvas entry, separate from the primary package |
-| `bridges/` | Java source used only by the optional mouse/canvas experiment |
-| `images/memory/` | Loadable `v2.0 raw` images and manifests |
-| `tests/` | Vectors, harnesses, and tool tests |
-| `docs/` | Roadmap, evidence, workflow, and build journal |
+| `architecture/` | Primitive, ISA, memory, timing and host-boundary contracts |
+| `circuits/manual/` | Manually saved native educational fixtures |
+| `tools/generate_*.py` | Deterministic generated-circuit source |
+| `circuits/generated/` | Committed inspectable native generated circuits |
+| `circuits/bitwright.circ` | Generated complete machine entry |
+| `bridges/console/` | ASCII capture/file feeding and raw pixel presentation |
+| `software/` | Original monitor and assembly demonstrations |
+| `images/memory/` | Generated images, listings, symbols and load records |
+| `tests/`, `tools/java/` | Software and actual native-simulator verification |
+| `docs/` | Decisions, evidence, journal, roadmap and instructions |
 
-Manual circuits own their `.circ` source; generator inputs own generated files.
-Commit generated outputs with their source and never overwrite manual files from
-generation. See [circuit ownership](circuits/README.md), the pinned
-[`toolchain.json`](toolchain.json), and [reproducibility policy](docs/workflow.md).
-Future `software/` sources arrive with the software milestones.
+The reference CPU is a test oracle, never part of the delivered computer.
+Generators never overwrite manual circuits. Commit generated artifacts with their
+sources and verify regeneration. The optional mouse experiment remains isolated
+under `experiments/` and is excluded from the default package.
 
-The [build journal](docs/journal/README.md) follows actual experiments and completed
-demonstrations, forming the basis of a future blog series or Forge project.
+This is intended as a reproducible demonstration of building abstractions from
+gates. Claims should be backed by native artifacts, tests and measured evidence,
+not by screenshots alone.

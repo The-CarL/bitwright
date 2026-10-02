@@ -1,5 +1,9 @@
 # Bitwright host canvas bridge (M0)
 
+Historical optional mouse experiment. The current computer uses the
+[ASCII/raw-pixel console bridge](console/README.md). This canvas JAR is not
+included in the default package.
+
 This source-available Java library targets **Logisim-evolution 5.0.0**. It retains a
 128 × 128 RGB image and hands host mouse events to circuit pins. It contains no
 CPU, instruction logic, address decoding, MMIO, drawing algorithm, or machine-side

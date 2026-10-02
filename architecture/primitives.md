@@ -1,38 +1,11 @@
-# Primitive-component boundary
+# Primitive policy
 
-Approved for the keyboard/text-terminal v1 scope amended on 2026-10-01:
+Allow Boolean gates, wiring, splitters, constants, pins/probes, clocks and native subcircuits built from these. Construct selectors, decoders, comparators, arithmetic, registers, counters and instruction control. Prohibit built-in CPU/ALU/adder/mux/decoder/comparator/register/counter, Java instruction execution, and ROM control/ALU lookup tables.
 
-| Layer | Allowed foundations | Logic Bitwright must build |
-| --- | --- | --- |
-| Combinational logic | Logic gates, wires, splitters, constants, pins, probes | Multiplexers, decoders, comparators, adders, ALU, bus selection |
-| State | Single-bit D flip-flops | Register banks, enables, counters, stack pointer, controller state |
-| Bulk storage | Built-in RAM and ROM arrays | Address decoding, write control, FIFO pointers/status |
-| Simulation | Clock sources and test-wrapper input pins | Clock/reset distribution and state advancement policy |
-| Host adapters | Stock Keyboard and TTY | CPU-visible device registers, acknowledgements, keyboard FIFO control |
+The CPU goes down to gate-built latches and flip-flops: its native library contains no built-in memory components. Registers compose these storage cells with gate-built enables and selection. Initial reset establishes a defined state in the feedback circuits. The console uses disclosed single-bit D flip-flops; bulk RAM/ROM are foundations. ROM may store firmware and glyph data, never hidden CPU control. A tiny gate-memory experiment can illustrate storage scaling without making thousands of feedback cells a prerequisite for program memory.
 
-Built-in CPU, ALU, adder, multiplexer, register, counter, comparator, and decoder
-components are prohibited in machine logic. RAM/ROM is for program, data, or fonts;
-lookup tables must not conceal an ALU or instruction controller. Use a hardwired
-multicycle controller, not microcode ROM.
+The console host only captures ASCII, feeds files through the input handshake, and retains/displays circuit-supplied pixels. Input registers, address decode, cursor, font lookup, wrap/scroll and execution belong to circuits. A bounded host queue crosses the event/simulation boundary and reports overflow.
 
-Keep host adapters visibly separate from machine logic. Stock Keyboard captures
-characters and stock TTY renders the text monitor. The CPU, address decoding,
-device registers, and keyboard FIFO belong to circuits. The stock host keyboard
-queue and machine FIFO are distinct buffers with separately documented capacity
-and overflow behavior. No mouse, pixel display, framebuffer, or custom Java bridge
-is required for v1.
+Stock Keyboard/TTY remain regression fixtures; the mouse library stays an optional experiment. Recursive audit checks all native libraries, including unused definitions, a strict host-class/component allowlist, missing dependencies and nonportable paths. A component allowlist cannot by itself prove correct ROM purpose; source review also matters.
 
-The earlier stock RGB Video and custom Java canvas are preserved separately in
-`experiments/mouse-canvas/`. Their circuits, code, tests, and historical evidence
-belong to the optional experiment. Its explicit audit exceptions do not apply to
-the primary Keyboard/TTY runtime or make mouse acceptance a v1 prerequisite.
-
-The component audit must follow every native library used by a machine project,
-identify host exceptions explicitly, and reject unknown components until reviewed.
-Test-only observation or stimulus components must be identified separately and
-must not bypass the circuits under test.
-
-A gate latch and tiny memory experiment are educational artifacts. The complete
-computer does not depend on gate-feedback storage. Gate-built 32 KiB RAM alone
-would require 262,144 storage bits before decoding/read selection, so bulk memory
-is a deliberate practicality boundary.
+Reference: [simulator gate-delay limits](https://github.com/logisim-evolution/logisim-evolution/blob/v5.0.0/src/main/resources/doc/en/html/guide/prop/delays.html).

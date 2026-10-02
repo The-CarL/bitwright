@@ -327,7 +327,9 @@ def never_halt():
 
 def serialize(p):
     E.indent(p,space="  ")
-    return E.tostring(p,encoding="unicode",xml_declaration=True)+"\n"
+    # ElementTree's declaration for a Unicode writer varies with Python's UTF-8
+    # mode/locale ("UTF-8" versus "utf-8"). Pin it independently of host settings.
+    return '<?xml version="1.0" encoding="UTF-8"?>\n'+E.tostring(p,encoding="unicode")+"\n"
 
 
 def main():
@@ -335,7 +337,7 @@ def main():
     parser.add_argument("--check",action="store_true",help="compare only; never write")
     parser.add_argument("--experiment",action="store_true",help="also generate/check the optional mouse-canvas experiment")
     args=parser.parse_args()
-    outputs={"circuits/generated/foundations.circ":foundations(),"circuits/generated/ram-harness.circ":ram_fixture(),"circuits/bitwright.circ":workbench(),"circuits/generated/never-halt.circ":never_halt()}
+    outputs={"circuits/generated/foundations.circ":foundations(),"circuits/generated/ram-harness.circ":ram_fixture(),"circuits/terminal-bench.circ":workbench(),"circuits/generated/never-halt.circ":never_halt()}
     if args.experiment:
         outputs["experiments/mouse-canvas/workbench.circ"] = mouse_workbench()
     stale=[]

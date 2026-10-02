@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
-  "architecture": "Bitwright v1",
-  "status": "approved target; not yet implemented",
+  "architecture": "Historical bespoke Bitwright ISA",
+  "status": "superseded on 2026-10-01; never implemented; not the current machine ISA",
+  "superseded_by": "6502-opcodes.json",
   "data_bits": 8,
   "address_bits": 16,
   "operand_byte_order": "little",

@@ -1,0 +1,12 @@
+{
+  "architecture": "NMOS 6502 documented opcodes",
+  "emitted_bytes": 82,
+  "end_exclusive": 850,
+  "entry": 768,
+  "format": "v2.0 raw, 8-bit words",
+  "origin": 768,
+  "padding": 0,
+  "sha256": "aa446ac7463756df5f34a745801b626c93ecf6c0f956e8ac9855b5d51406a20b",
+  "size": 82,
+  "source": "software/demos/memory.asm"
+}

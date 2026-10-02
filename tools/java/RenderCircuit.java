@@ -1,4 +1,7 @@
 import com.cburch.logisim.circuit.CircuitState;
+import com.cburch.logisim.circuit.Analyze;
+import com.cburch.logisim.data.Value;
+import com.cburch.logisim.std.wiring.Pin;
 import com.cburch.logisim.comp.ComponentDrawContext;
 import com.cburch.logisim.file.Loader;
 import com.cburch.logisim.proj.Project;
@@ -31,6 +34,16 @@ public final class RenderCircuit {
     var project = new Project(file);
     try {
       var state = CircuitState.createRootState(project, circuit, Thread.currentThread());
+      // Gate-feedback storage needs an explicit reset before inspecting signals.
+      for (var entry : Analyze.getPinLabels(circuit).entrySet()) {
+        if (entry.getValue().equals("Reset") && Pin.FACTORY.isInputPin(entry.getKey())) {
+          Pin.FACTORY.driveInputPin(state.getInstanceState(entry.getKey()), Value.TRUE);
+          state.markComponentAsDirty(entry.getKey().getComponent());
+          state.getPropagator().propagate();
+          Pin.FACTORY.driveInputPin(state.getInstanceState(entry.getKey()), Value.FALSE);
+          state.markComponentAsDirty(entry.getKey().getComponent());
+        }
+      }
       state.getPropagator().propagate();
       for (var component : circuit.getNonWires()) {
         for (var end : component.getEnds()) {

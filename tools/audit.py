@@ -13,6 +13,22 @@ ALLOWED = {
     "#Base": {"Text"},
 }
 
+CONSOLE_LIBRARY = "org.bitwright.console.ConsoleLibrary"
+CONSOLE_COMPONENTS = {"ConsoleHost"}
+
+
+def host_library(desc: str, *, experiment: bool) -> tuple[str, str]:
+    parts = desc.split("#")
+    if len(parts) != 3:
+        raise VerificationError(f"Unapproved host library: {desc}")
+    if parts[2] == CONSOLE_LIBRARY:
+        return parts[1], parts[2]
+    if not experiment:
+        raise VerificationError(f"JAR library outside the default terminal target: {desc}")
+    if parts[2] != "org.bitwright.bridge.BitwrightLibrary":
+        raise VerificationError(f"Unapproved host library: {desc}")
+    return parts[1], parts[2]
+
 
 def audit(paths: list[Path], root: Path, *, require_jars: bool = True, experiment: bool = False) -> dict[str, int]:
     root = root.resolve()
@@ -43,12 +59,8 @@ def audit(paths: list[Path], root: Path, *, require_jars: bool = True, experimen
         libraries = {lib.get("name"): lib.get("desc", "") for lib in project.findall("lib")}
         for desc in libraries.values():
             if desc.startswith("jar#"):
-                if not experiment:
-                    raise VerificationError(f"JAR libraries are outside the default terminal target: {desc}")
-                parts = desc.split("#")
-                if len(parts) != 3 or parts[2] != "org.bitwright.bridge.BitwrightLibrary":
-                    raise VerificationError(f"Unapproved host library: {desc}")
-                target = portable(path, parts[1])
+                relative, _ = host_library(desc, experiment=experiment)
+                target = portable(path, relative)
                 if require_jars and not target.is_file():
                     raise VerificationError(f"Missing host library: {target}; build the bridge first.")
         local = {c.get("name") for c in project.findall("circuit")}
@@ -61,6 +73,8 @@ def audit(paths: list[Path], root: Path, *, require_jars: bool = True, experimen
                         raise VerificationError(f"Undefined local circuit {name} in {path}")
                     continue
                 desc = libraries.get(lib, "")
+                if path.name == "cpu6502.circ" and desc == "#Memory":
+                    raise VerificationError(f"CPU storage must be gate-built, found {name} in {path}")
                 if desc.startswith("file#"):
                     target = portable(path, desc[5:])
                     visit(target)
@@ -68,13 +82,12 @@ def audit(paths: list[Path], root: Path, *, require_jars: bool = True, experimen
                     if name not in names:
                         raise VerificationError(f"Missing circuit {name} in {target}")
                 elif desc.startswith("jar#"):
-                    parts = desc.split("#")
-                    if len(parts) != 3 or parts[2] != "org.bitwright.bridge.BitwrightLibrary":
-                        raise VerificationError(f"Unapproved host library: {desc}")
-                    target = portable(path, parts[1])
+                    relative, classname = host_library(desc, experiment=experiment)
+                    target = portable(path, relative)
                     if require_jars and not target.is_file():
                         raise VerificationError(f"Missing host library: {target}; build the bridge first.")
-                    if name != "BitwrightCanvas":
+                    allowed = CONSOLE_COMPONENTS if classname == CONSOLE_LIBRARY else {"BitwrightCanvas"}
+                    if name not in allowed:
                         raise VerificationError(f"Unapproved Java component: {name}")
                     counts["HOST:" + name] += 1
                 elif experiment and desc == "#I/O" and name == "RGB Video":

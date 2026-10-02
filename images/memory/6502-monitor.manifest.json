@@ -1,0 +1,12 @@
+{
+  "architecture": "NMOS 6502 documented opcodes",
+  "emitted_bytes": 680,
+  "end_exclusive": 65536,
+  "entry": 65280,
+  "format": "v2.0 raw, 8-bit words",
+  "origin": 61440,
+  "padding": 255,
+  "sha256": "5eeff44b8d2b89f847da2734ed9cf245c04811dbd3c14b6f67bb207afae83257",
+  "size": 4096,
+  "source": "software/monitor/monitor.asm"
+}

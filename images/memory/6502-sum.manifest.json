@@ -1,0 +1,12 @@
+{
+  "architecture": "NMOS 6502 documented opcodes",
+  "emitted_bytes": 116,
+  "end_exclusive": 884,
+  "entry": 768,
+  "format": "v2.0 raw, 8-bit words",
+  "origin": 768,
+  "padding": 0,
+  "sha256": "4367f537546858970632b6e90019195dafe8349af6ef31f96d26f2ebfb2644a5",
+  "size": 116,
+  "source": "software/demos/sum.asm"
+}

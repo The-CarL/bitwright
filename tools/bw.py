@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bitwright terminal development commands. Readers only need Logisim."""
+"""Build and verify Bitwright's native Apple-1-inspired gate computer."""
 from __future__ import annotations
 
 import argparse
@@ -25,7 +25,7 @@ from logisim import (ROOT, Result, VerificationError, check_tty, command, java_p
                      fetch, validate_image, vectors, verify_jar)
 
 EXPERIMENT = Path("experiments/mouse-canvas/workbench.circ")
-PACKAGE_NAME = "bitwright-m0"
+PACKAGE_NAME = "bitwright-apple1"
 # Explicit executable/source allowlist: optional bridge/pixel tooling never ships by accident.
 CORE_FILES = (
     "README.md", "toolchain.json", ".python-version", "circuits/README.md",
@@ -35,6 +35,13 @@ CORE_FILES = (
     "images/memory/m0-ram-wrong.hex", "images/memory/m0-ram.manifest.json",
     "tools/bw.py", "tools/audit.py", "tools/logisim.py",
     "tools/generate_circuits.py", "tools/java/RenderCircuit.java", "tools/java/M0TextSmoke.java",
+    "circuits/terminal-bench.circ", "circuits/generated/cpu6502.circ",
+    "circuits/generated/cpu6502-manifest.json", "circuits/generated/terminal.circ",
+    "tools/asm6502.py", "tools/reference6502.py", "tools/build_software.py",
+    "tools/generate_6502.py", "tools/generate_terminal.py", "tools/generate_machine.py",
+    "tools/test_6502_differential.py", "tools/java/Cpu6502Smoke.java",
+    "tools/java/TerminalSmoke.java", "tools/java/MachineSmoke.java", "tools/java/BitwrightMachineBenchmark.java",
+    "bridges/console/build.py", "bridges/console/README.md", "build/bitwright-console.jar",
 )
 
 
@@ -62,6 +69,16 @@ def bridge() -> None:
 def generate(check: bool = False, *, experiment: bool = False) -> None:
     checked([sys.executable, str(ROOT / "tools/generate_circuits.py"),
              *(["--check"] if check else []), *(["--experiment"] if experiment else [])])
+    if not experiment:
+        for script in ["build_software.py", "generate_6502.py", "generate_terminal.py", "generate_machine.py"]:
+            checked([sys.executable, str(ROOT / "tools" / script), *(["--check"] if check else [])])
+
+
+def console_bridge() -> None:
+    args = [sys.executable, str(ROOT / "bridges/console/build.py"), "--logisim-jar", str(verify_jar())]
+    if os.environ.get("JAVA_HOME"):
+        args += ["--jdk-home", os.environ["JAVA_HOME"]]
+    checked(args, timeout=120)
 
 
 def primitive_audit(root: Path = ROOT, *, experiment: bool = False) -> dict[str, int]:
@@ -85,7 +102,7 @@ def ram_test(root: Path, *, negative: bool = False, name: str = "ram", prefix: l
 
 def terminal_echo(root: Path = ROOT, *, name: str = "terminal-echo", prefix: list[str] = (),
                   project: Path | None = None) -> None:
-    project = project or root / "circuits/bitwright.circ"
+    project = project or root / "circuits/terminal-bench.circ"
     args = [*prefix, *command(str(project), "--tty", "tty", headless=True)]
     expected = "Bitwright M0\n"
     start = time.monotonic()
@@ -107,26 +124,34 @@ def terminal_echo(root: Path = ROOT, *, name: str = "terminal-echo", prefix: lis
     print(f"{name}: exact native ASCII echo; interactive process stopped at test deadline.")
 
 
-def native_tools(*, experiment: bool = False) -> list[str]:
+def native_tools(root: Path = ROOT, *, experiment: bool = False) -> list[str]:
     jar = verify_jar()
-    classes = ROOT / "build" / ("experiment-tools" if experiment else "tools")
+    bridge_jar = root / "build/bitwright-console.jar"
+    if not experiment and not bridge_jar.is_file():
+        raise VerificationError(f"Missing console library in tested package: {bridge_jar}")
+    classes = root / "build" / ("experiment-tools" if experiment else "tools")
     classes.mkdir(parents=True, exist_ok=True)
-    sources = [ROOT / "tools/java/RenderCircuit.java"]
-    sources += [ROOT / ("tools/java/experiments/M0PixelSmoke.java" if experiment else "tools/java/M0TextSmoke.java")]
+    sources = [root / "tools/java/RenderCircuit.java"]
+    sources += [root / ("tools/java/experiments/M0PixelSmoke.java" if experiment else "tools/java/M0TextSmoke.java")]
+    if not experiment:
+        sources += [root / "tools/java" / name for name in ("Cpu6502Smoke.java", "TerminalSmoke.java", "MachineSmoke.java", "BitwrightMachineBenchmark.java")]
+    classpath = os.pathsep.join([str(jar), str(bridge_jar)])
     checked([java_path("javac"), "--release", "21", "-encoding", "UTF-8", "-g:none",
-             "-cp", str(jar), "-d", str(classes), *map(str, sources)])
+             "-cp", classpath, "-d", str(classes), *map(str, sources)])
     return [java_path(), "-Djava.awt.headless=true",
-            f"-Djava.util.prefs.userRoot={ROOT / 'build/java-preferences'}",
-            "-cp", os.pathsep.join([str(jar), str(classes)])]
+            f"-Djava.util.prefs.userRoot={root / 'build/java-preferences'}",
+            "-cp", os.pathsep.join([classpath, str(classes)])]
 
 
 def native_artifacts() -> None:
     """Native text checks and artifact rendering, independent of optional graphics."""
     args = native_tools()
-    result = checked([*args, "M0TextSmoke", str(ROOT / "circuits/bitwright.circ")])
+    result = checked([*args, "M0TextSmoke", str(ROOT / "circuits/terminal-bench.circ")])
     result.save(ROOT / "build/test-results/native-text.json")
     for project, circuit, name in [
-        ("bitwright.circ", "M0Workbench", "m0-terminal"),
+        ("terminal-bench.circ", "M0Workbench", "m0-terminal"),
+        ("bitwright.circ", "Bitwright", "bitwright"),
+        ("generated/terminal.circ", "Apple1Console", "apple1-console"),
         ("generated/foundations.circ", "LoadBit", "load-bit"),
         ("manual/foundations.circ", "LoadBit", "manual-load-bit"),
         ("generated/ram-harness.circ", "RamHarness", "ram-harness"),
@@ -149,7 +174,7 @@ def test_experiment() -> None:
     print("Optional experiment checks passed; they are not terminal-v1 acceptance.")
 
 
-def test() -> None:
+def test_legacy() -> None:
     checked([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py"])
     generate(check=True)
     primitive_audit()
@@ -162,8 +187,8 @@ def test() -> None:
     vectors(ROOT / "circuits/generated/foundations.circ", "GateAnd",
             ROOT / "tests/vectors/intentional-fail.txt", negative=True, log="intentional-failure")
     print("Incorrect vector rejected despite Logisim exit status zero.")
-    vectors(ROOT / "circuits/bitwright.circ", "TerminalControl", ROOT / "tests/vectors/terminal-control.txt", log="terminal-control")
-    vectors(ROOT / "circuits/bitwright.circ", "M0Workbench", ROOT / "tests/vectors/workbench-reset.txt", log="workbench-reset")
+    vectors(ROOT / "circuits/terminal-bench.circ", "TerminalControl", ROOT / "tests/vectors/terminal-control.txt", log="terminal-control")
+    vectors(ROOT / "circuits/terminal-bench.circ", "M0Workbench", ROOT / "tests/vectors/workbench-reset.txt", log="workbench-reset")
     with tempfile.TemporaryDirectory(prefix="bitwright-invalid-") as tmp:
         missing = Path(tmp) / "missing-pin.txt"
         missing.write_text("NotAPin Y\n0 0\n")
@@ -210,7 +235,7 @@ def roundtrip() -> None:
             raise VerificationError("Native save failed: " + result.stdout + result.stderr)
         for name, vector in [("GateAnd", "and"), ("LoadBit", "load-bit")]:
             vectors(saved, name, ROOT / "tests/vectors" / f"{vector}.txt", log=f"roundtrip-{source}-{vector}")
-    original = ROOT / "circuits/bitwright.circ"
+    original = ROOT / "circuits/terminal-bench.circ"
     saved = folder / "workbench.circ"
     saved.unlink(missing_ok=True)
     result = run(command("--new-file-format", str(original), str(saved)))
@@ -225,6 +250,39 @@ def roundtrip() -> None:
         vectors(saved, circuit, ROOT / "tests/vectors" / f"{vector}.txt", log=f"roundtrip-{vector}")
     terminal_echo(project=saved, name="roundtrip-terminal-echo")
     print("Native save/reopen behavior passed for both foundation sources and the terminal workbench.")
+    original = ROOT / "circuits/bitwright.circ"
+    saved = folder / "computer.circ"
+    saved.unlink(missing_ok=True)
+    result = run(command("--new-file-format", str(original), str(saved)), timeout=120)
+    result.save(ROOT / "build/test-results/roundtrip-computer.json")
+    if result.returncode or not saved.is_file():
+        raise VerificationError("Native computer save failed: " + result.stdout + result.stderr)
+    audit([saved], ROOT)
+    machine_test(project=saved, name="roundtrip-computer-boot", boot_only=True)
+
+
+def machine_test(root: Path = ROOT, *, project: Path | None = None, name: str = "machine",
+                 boot_only: bool = False, prefix: list[str] = ()) -> Result:
+    args = native_tools(root)
+    result = checked([*prefix, *args, "MachineSmoke", str(project or root / "circuits/bitwright.circ"),
+                      str(root), *(["--boot-only"] if boot_only else [])], timeout=180 if boot_only else 1200)
+    result.save(ROOT / "build/test-results" / f"{name}.json")
+    if "Native machine:" not in result.stdout or (not boot_only and "assertions passed" not in result.stdout):
+        raise VerificationError("Missing explicit native machine success evidence")
+    return result
+
+
+def test() -> None:
+    console_bridge()
+    test_legacy()
+    args = native_tools()
+    for main, project in [("Cpu6502Smoke", "cpu6502.circ"), ("TerminalSmoke", "terminal.circ")]:
+        result = checked([*args, main, str(ROOT / "circuits/generated" / project)], timeout=120)
+        result.save(ROOT / "build/test-results" / f"{main}.json")
+    from test_6502_differential import run_suite
+    print("Independent native CPU comparison:", json.dumps(run_suite(), sort_keys=True))
+    machine_test()
+    print("Native computer regression suite passed; see the evidence report for desktop/performance limits.")
 
 
 def package_files(root: Path = ROOT) -> dict[str, bytes]:
@@ -233,6 +291,9 @@ def package_files(root: Path = ROOT) -> dict[str, bytes]:
         files.update((root / folder).rglob("*.md"))
         files.update((root / folder).rglob("*.json"))
         files.update((root / folder).rglob("*.svg"))
+    files.update((root / "software").rglob("*.asm"))
+    files.update((root / "bridges/console/src").rglob("*.java"))
+    files.update((root / "images/memory").glob("6502-*"))
     files.update((root / "tests").glob("test_*.py"))
     files.update((root / "tests/vectors").glob("*.txt"))
     snapshot = {}
@@ -276,6 +337,7 @@ def verify_package(path: Path) -> None:
 
 
 def package() -> Path:
+    console_bridge()
     generate(check=True)
     primitive_audit()
     files = package_files()
@@ -293,6 +355,7 @@ def package() -> Path:
         primitive_audit(relocated)
         ram_test(relocated, name="relocated-ram")
         terminal_echo(relocated, name="relocated-terminal-echo")
+        machine_test(relocated, name="relocated-computer-boot", boot_only=True)
     print(f"{target}\nSHA256 {hashlib.sha256(contents).hexdigest()}")
     return target
 
@@ -346,12 +409,13 @@ def offline_test() -> None:
         primitive_audit(relocated)
         ram_test(relocated, name="offline-ram", prefix=prefix)
         terminal_echo(relocated, name="offline-terminal-echo", prefix=prefix)
-    print("Extracted terminal package passed native RAM/ASCII tests with verified process-local network denial.")
+        machine_test(relocated, name="offline-computer-boot", boot_only=True, prefix=prefix)
+    print("Extracted computer package passed firmware boot and native RAM/ASCII tests with verified network denial.")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["fetch", "doctor", "generate", "check-generated", "audit", "test", "render", "roundtrip", "package", "offline-test", "run", "bridge", "test-experiment", "audit-experiment", "run-experiment"])
+    parser.add_argument("action", choices=["fetch", "doctor", "build", "generate", "check-generated", "audit", "test", "test-machine", "test-legacy", "benchmark", "render", "roundtrip", "package", "offline-test", "run", "run-bench", "bridge", "console-bridge", "test-experiment", "audit-experiment", "run-experiment"])
     args = parser.parse_args()
     try:
         if args.action == "fetch":
@@ -362,10 +426,16 @@ def main() -> int:
             checked(command("--version"))
         elif args.action == "generate":
             generate()
+        elif args.action == "build":
+            console_bridge()
+            generate()
+            primitive_audit()
         elif args.action == "check-generated":
             generate(check=True)
         elif args.action == "bridge":
             bridge()
+        elif args.action == "console-bridge":
+            console_bridge()
         elif args.action == "audit":
             primitive_audit()
         elif args.action == "audit-experiment":
@@ -374,6 +444,13 @@ def main() -> int:
             test_experiment()
         elif args.action == "test":
             test()
+        elif args.action == "test-machine":
+            machine_test()
+        elif args.action == "benchmark":
+            checked([*native_tools(), "BitwrightMachineBenchmark", str(ROOT / "circuits/bitwright.circ"),
+                     str(ROOT / "build/test-results/machine-benchmark.json")], timeout=180)
+        elif args.action == "test-legacy":
+            test_legacy()
         elif args.action == "render":
             primitive_audit()
             native_artifacts()
@@ -383,8 +460,8 @@ def main() -> int:
             package()
         elif args.action == "offline-test":
             offline_test()
-        elif args.action in {"run", "run-experiment"}:
-            project = ROOT / (EXPERIMENT if args.action == "run-experiment" else "circuits/bitwright.circ")
+        elif args.action in {"run", "run-bench", "run-experiment"}:
+            project = ROOT / (EXPERIMENT if args.action == "run-experiment" else "circuits/terminal-bench.circ" if args.action == "run-bench" else "circuits/bitwright.circ")
             primitive_audit(experiment=args.action == "run-experiment")
             return subprocess.call(command(str(project)))
     except (VerificationError, OSError, ValueError, zipfile.BadZipFile) as exc:
