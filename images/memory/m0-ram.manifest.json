@@ -1,0 +1,12 @@
+{
+  "format": "v2.0 raw",
+  "bank_label": "M0_RAM",
+  "origin": 0,
+  "address_bits": 4,
+  "data_bits": 8,
+  "capacity_bytes": 16,
+  "image": "m0-ram.hex",
+  "expected_first_byte": 165,
+  "negative_image": "m0-ram-wrong.hex",
+  "negative_first_byte": 90
+}

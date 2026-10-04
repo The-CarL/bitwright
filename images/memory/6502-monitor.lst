@@ -1,0 +1,307 @@
+F000  D8                         29      CLD
+F001  78                         30      SEI
+F002  A2 FF                      31      LDX #$FF
+F004  9A                         32      TXS
+F005  A9 A7                      33      LDA #$A7
+F007  8D 11 D0                   34      STA KBDCR
+F00A  8D 13 D0                   35      STA DSPCR
+F00D  A2 00                      36      LDX #0
+F00F  BD 5E F2                   38      LDA banner,X
+F012  F0 06                      39      BEQ prompt
+F014  20 2E F2                   40      JSR putc
+F017  E8                         41      INX
+F018  D0 F5                      42      BNE banner_loop
+F01A  D8                         44      CLD
+F01B  A2 FF                      45      LDX #$FF
+F01D  9A                         46      TXS
+F01E  20 37 F2                   47      JSR newline
+F021  A9 5C                      48      LDA #'\\'
+F023  20 2E F2                   49      JSR putc
+F026  A9 20                      50      LDA #' '
+F028  20 2E F2                   51      JSR putc
+F02B  A2 00                      52      LDX #0
+F02D  20 23 F2                   54      JSR getc
+F030  C9 20                      56      CMP #' '
+F032  90 21                      57      BCC control_key
+F034  C9 7F                      58      CMP #$7F
+F036  F0 30                      59      BEQ backspace
+F038  E0 4F                      60      CPX #79
+F03A  B0 F1                      61      BCS line_loop
+F03C  C9 61                      62      CMP #'a'
+F03E  90 06                      63      BCC command_char
+F040  C9 7B                      64      CMP #'z'+1
+F042  B0 02                      65      BCS command_char
+F044  29 5F                      66      AND #$5F
+F046  9D 00 02                   68      STA LINE,X
+F049  E8                         69      INX
+F04A  2C 12 D0                   71      BIT DSP
+F04D  30 FB                      72      BMI echo_line_char
+F04F  8D 12 D0                   73      STA DSP
+F052  4C 2D F0                   74      JMP line_loop
+F055  C9 1B                      76      CMP #$1B
+F057  F0 C1                      77      BEQ prompt
+F059  C9 08                      78      CMP #$08
+F05B  F0 0B                      79      BEQ backspace
+F05D  C9 0D                      80      CMP #$0D
+F05F  F0 14                      81      BEQ line_done
+F061  C9 0A                      82      CMP #$0A
+F063  F0 10                      83      BEQ line_done
+F065  4C 2D F0                   84      JMP line_loop
+F068  E0 00                      86      CPX #0
+F06A  F0 C1                      87      BEQ line_loop
+F06C  CA                         88      DEX
+F06D  A9 08                      89      LDA #$08
+F06F  20 2E F2                   90      JSR putc
+F072  4C 2D F0                   91      JMP line_loop
+F075  A9 00                      93      LDA #0
+F077  9D 00 02                   94      STA LINE,X
+F07A  20 37 F2                   95      JSR newline
+F07D  A0 00                      96      LDY #0
+F07F  A2 00                      97      LDX #0                  ; (PTR,X) stores preserve the parser index Y.
+F081  20 84 F1                   98      JSR spaces
+F084  B9 00 02                   99      LDA LINE,Y
+F087  F0 91                     100      BEQ prompt
+F089  20 8F F1                  101      JSR read_hex
+F08C  90 1C                     102      BCC parse_error
+F08E  A5 24                     103      LDA VALUE
+F090  85 20                     104      STA PTR
+F092  A5 25                     105      LDA VALUE+1
+F094  85 21                     106      STA PTR+1
+F096  20 84 F1                  107      JSR spaces
+F099  B9 00 02                  108      LDA LINE,Y
+F09C  F0 20                     109      BEQ examine_one
+F09E  C9 3A                     110      CMP #':'
+F0A0  F0 4A                     111      BEQ store_loop
+F0A2  C9 52                     112      CMP #'R'
+F0A4  F0 0C                     113      BEQ run_program
+F0A6  C9 2E                     114      CMP #'.'
+F0A8  F0 1F                     115      BEQ examine_range
+F0AA  A9 3F                     117      LDA #'?'
+F0AC  20 2E F2                  118      JSR putc
+F0AF  4C 1A F0                  119      JMP prompt
+F0B2  C8                        121      INY
+F0B3  20 84 F1                  122      JSR spaces
+F0B6  B9 00 02                  123      LDA LINE,Y
+F0B9  D0 EF                     124      BNE parse_error
+F0BB  6C 20 00                  125      JMP (PTR)
+F0BE  A5 20                     127      LDA PTR
+F0C0  85 22                     128      STA LIMIT
+F0C2  A5 21                     129      LDA PTR+1
+F0C4  85 23                     130      STA LIMIT+1
+F0C6  4C 25 F1                  131      JMP dump_loop
+F0C9  C8                        133      INY
+F0CA  20 8F F1                  134      JSR read_hex
+F0CD  90 DB                     135      BCC parse_error
+F0CF  A5 24                     136      LDA VALUE
+F0D1  85 22                     137      STA LIMIT
+F0D3  A5 25                     138      LDA VALUE+1
+F0D5  85 23                     139      STA LIMIT+1
+F0D7  20 84 F1                  140      JSR spaces
+F0DA  B9 00 02                  141      LDA LINE,Y
+F0DD  D0 CB                     142      BNE parse_error
+F0DF  A5 22                     143      LDA LIMIT
+F0E1  C5 20                     144      CMP PTR
+F0E3  A5 23                     145      LDA LIMIT+1
+F0E5  E5 21                     146      SBC PTR+1
+F0E7  90 C1                     147      BCC parse_error
+F0E9  4C 25 F1                  148      JMP dump_loop
+F0EC  C8                        150      INY
+F0ED  20 84 F1                  151      JSR spaces
+F0F0  B9 00 02                  152      LDA LINE,Y
+F0F3  F0 2D                     153      BEQ store_done
+F0F5  20 DD F1                  154      JSR read_byte
+F0F8  90 B0                     155      BCC parse_error
+F0FA  A5 21                     157      LDA PTR+1
+F0FC  C9 03                     158      CMP #$03
+F0FE  90 1A                     159      BCC store_low
+F100  C9 10                     160      CMP #$10
+F102  B0 A6                     161      BCS parse_error
+F104  A5 24                     163      LDA VALUE
+F106  81 20                     165      STA (PTR,X)
+F108  E6 20                     166      INC PTR
+F10A  D0 02                     167      BNE store_advanced
+F10C  E6 21                     168      INC PTR+1
+F10E  B9 00 02                  170      LDA LINE,Y
+F111  F0 0F                     171      BEQ store_done
+F113  C9 20                     172      CMP #' '
+F115  F0 D5                     173      BEQ store_loop
+F117  4C AA F0                  174      JMP parse_error
+F11A  20 5C F1                  176      JSR valid_store
+F11D  B0 E5                     177      BCS store_valid
+F11F  4C AA F0                  178      JMP parse_error
+F122  4C 1A F0                  180      JMP prompt
+F125  A5 21                     182      LDA PTR+1
+F127  20 3C F2                  183      JSR puthex
+F12A  A5 20                     184      LDA PTR
+F12C  20 3C F2                  185      JSR puthex
+F12F  A9 3A                     186      LDA #':'
+F131  20 2E F2                  187      JSR putc
+F134  A9 20                     188      LDA #' '
+F136  20 2E F2                  189      JSR putc
+F139  A0 00                     190      LDY #0
+F13B  B1 20                     191      LDA (PTR),Y
+F13D  20 3C F2                  192      JSR puthex
+F140  20 37 F2                  193      JSR newline
+F143  A5 20                     194      LDA PTR
+F145  C5 22                     195      CMP LIMIT
+F147  D0 06                     196      BNE dump_next
+F149  A5 21                     197      LDA PTR+1
+F14B  C5 23                     198      CMP LIMIT+1
+F14D  F0 D3                     199      BEQ store_done
+F14F  20 55 F1                  201      JSR inc_ptr
+F152  4C 25 F1                  202      JMP dump_loop
+F155  E6 20                     204      INC PTR
+F157  D0 02                     205      BNE inc_done
+F159  E6 21                     206      INC PTR+1
+F15B  60                        208      RTS
+F15C  A5 21                     210      LDA PTR+1
+F15E  C9 10                     211      CMP #$10
+F160  B0 20                     212      BCS store_rejected
+F162  C9 01                     213      CMP #$01
+F164  F0 1C                     214      BEQ store_rejected
+F166  C9 02                     215      CMP #$02
+F168  D0 08                     216      BNE store_zero_page
+F16A  A5 20                     217      LDA PTR
+F16C  C9 50                     218      CMP #$50
+F16E  90 12                     219      BCC store_rejected
+F170  B0 0E                     220      BCS store_allowed
+F172  C9 00                     222      CMP #$00
+F174  D0 0A                     223      BNE store_allowed
+F176  A5 20                     224      LDA PTR
+F178  C9 20                     225      CMP #$20
+F17A  90 04                     226      BCC store_allowed
+F17C  C9 28                     227      CMP #$28
+F17E  90 02                     228      BCC store_rejected
+F180  38                        230      SEC
+F181  60                        231      RTS
+F182  18                        233      CLC
+F183  60                        234      RTS
+F184  B9 00 02                  236      LDA LINE,Y
+F187  C9 20                     237      CMP #' '
+F189  D0 03                     238      BNE spaces_done
+F18B  C8                        239      INY
+F18C  D0 F6                     240      BNE spaces
+F18E  60                        242      RTS
+F18F  20 84 F1                  244      JSR spaces
+F192  A9 00                     246      LDA #0
+F194  85 24                     247      STA VALUE
+F196  85 25                     248      STA VALUE+1
+F198  85 26                     249      STA DIGITS
+F19A  B9 00 02                  251      LDA LINE,Y
+F19D  C9 30                     252      CMP #'0'
+F19F  90 34                     253      BCC hex_end
+F1A1  C9 3A                     254      CMP #':'
+F1A3  90 0E                     255      BCC decimal_digit
+F1A5  C9 41                     256      CMP #'A'
+F1A7  90 2C                     257      BCC hex_end
+F1A9  C9 47                     258      CMP #'G'
+F1AB  B0 28                     259      BCS hex_end
+F1AD  38                        260      SEC
+F1AE  E9 37                     261      SBC #'A'-10
+F1B0  4C B6 F1                  262      JMP digit_ready
+F1B3  38                        264      SEC
+F1B4  E9 30                     265      SBC #'0'
+F1B6  85 27                     267      STA NIBBLE
+F1B8  E6 26                     268      INC DIGITS
+F1BA  A5 26                     269      LDA DIGITS
+F1BC  C9 05                     270      CMP #5
+F1BE  B0 1B                     271      BCS hex_fail
+F1C0  A5 24                     272      LDA VALUE
+F1C2  0A                        273      ASL A
+F1C3  26 25                     274      ROL VALUE+1
+F1C5  0A                        275      ASL A
+F1C6  26 25                     276      ROL VALUE+1
+F1C8  0A                        277      ASL A
+F1C9  26 25                     278      ROL VALUE+1
+F1CB  0A                        279      ASL A
+F1CC  26 25                     280      ROL VALUE+1
+F1CE  05 27                     281      ORA NIBBLE
+F1D0  85 24                     282      STA VALUE
+F1D2  C8                        283      INY
+F1D3  D0 C5                     284      BNE hex_loop
+F1D5  A5 26                     286      LDA DIGITS
+F1D7  F0 02                     287      BEQ hex_fail
+F1D9  38                        288      SEC
+F1DA  60                        289      RTS
+F1DB  18                        291      CLC
+F1DC  60                        292      RTS
+F1DD  A2 00                     297      LDX #0
+F1DF  A9 00                     298      LDA #0
+F1E1  85 24                     299      STA VALUE
+F1E3  B9 00 02                  301      LDA LINE,Y
+F1E6  C9 30                     302      CMP #'0'
+F1E8  90 2D                     303      BCC byte_end
+F1EA  C9 3A                     304      CMP #':'
+F1EC  90 0E                     305      BCC byte_decimal
+F1EE  C9 41                     306      CMP #'A'
+F1F0  90 25                     307      BCC byte_end
+F1F2  C9 47                     308      CMP #'G'
+F1F4  B0 21                     309      BCS byte_end
+F1F6  38                        310      SEC
+F1F7  E9 37                     311      SBC #'A'-10
+F1F9  4C FF F1                  312      JMP byte_digit
+F1FC  38                        314      SEC
+F1FD  E9 30                     315      SBC #'0'
+F1FF  85 27                     317      STA NIBBLE
+F201  E8                        318      INX
+F202  E0 05                     319      CPX #5
+F204  B0 19                     320      BCS byte_fail
+F206  A5 24                     321      LDA VALUE
+F208  C9 10                     322      CMP #$10
+F20A  B0 13                     323      BCS byte_fail
+F20C  0A                        324      ASL A
+F20D  0A                        325      ASL A
+F20E  0A                        326      ASL A
+F20F  0A                        327      ASL A
+F210  05 27                     328      ORA NIBBLE
+F212  85 24                     329      STA VALUE
+F214  C8                        330      INY
+F215  D0 CC                     331      BNE byte_loop
+F217  E0 00                     333      CPX #0
+F219  F0 04                     334      BEQ byte_fail
+F21B  A2 00                     335      LDX #0
+F21D  38                        336      SEC
+F21E  60                        337      RTS
+F21F  A2 00                     339      LDX #0
+F221  18                        340      CLC
+F222  60                        341      RTS
+F223  AD 11 D0                  343      LDA KBDCR
+F226  10 FB                     344      BPL getc
+F228  AD 10 D0                  345      LDA KBD
+F22B  29 7F                     346      AND #$7F
+F22D  60                        347      RTS
+F22E  2C 12 D0                  349      BIT DSP
+F231  30 FB                     350      BMI putc
+F233  8D 12 D0                  351      STA DSP
+F236  60                        352      RTS
+F237  A9 0D                     354      LDA #$0D
+F239  4C 2E F2                  355      JMP putc
+F23C  08                        357      PHP
+F23D  D8                        358      CLD
+F23E  48                        359      PHA
+F23F  4A                        360      LSR A
+F240  4A                        361      LSR A
+F241  4A                        362      LSR A
+F242  4A                        363      LSR A
+F243  20 4E F2                  364      JSR putnibble
+F246  68                        365      PLA
+F247  29 0F                     366      AND #$0F
+F249  20 4E F2                  367      JSR putnibble
+F24C  28                        368      PLP
+F24D  60                        369      RTS
+F24E  C9 0A                     371      CMP #10
+F250  90 06                     372      BCC putdigit
+F252  18                        373      CLC
+F253  69 37                     374      ADC #'A'-10
+F255  4C 2E F2                  375      JMP putc
+F258  18                        377      CLC
+F259  69 30                     378      ADC #'0'
+F25B  4C 2E F2                  379      JMP putc
+F25E  42 49 54 57 52 49 47 48 54 20 36 35 30 32 0D 41 44 44 52 20 20 41 44 44 52 2E 45 4E 44 20 20 41 44 44 52 3A 20 42 59 54 45 53 20 20 41 44 44 52 52 00  381      .byte "BITWRIGHT 6502", $0D, "ADDR  ADDR.END  ADDR: BYTES  ADDRR", 0
+FE00  4C 23 F2                  384      JMP getc
+FE03  4C 3C F2                  385      JMP puthex
+FE06  4C 37 F2                  386      JMP newline
+FF00  4C 00 F0                  388      JMP reset
+FF03  4C 1A F0                  389      JMP prompt
+FFEF  4C 2E F2                  391      JMP putc
+FFFA  00 F0 00 FF 00 F0         393      .word reset, $FF00, reset

@@ -1,0 +1,10 @@
+{
+  "logisim": {
+    "version": "5.0.0",
+    "filename": "logisim-evolution-5.0.0-all.jar",
+    "url": "https://github.com/logisim-evolution/logisim-evolution/releases/download/v5.0.0/logisim-evolution-5.0.0-all.jar",
+    "sha256": "6b368e894742c04cc83aa9830f869bcab0190ede4df43ad6fecdb89b3a23a41c"
+  },
+  "java": {"major": 21, "tested": "Temurin 21.0.12.1+1"},
+  "python": {"minimum": "3.12", "tested": "3.12.12"}
+}

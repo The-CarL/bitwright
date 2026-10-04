@@ -1,0 +1,12 @@
+0300  A2 00                       7      LDX #0
+0302  BD 1B 03                    9      LDA message,X
+0305  F0 06                      10      BEQ wait_key
+0307  20 EF FF                   11      JSR PUTC
+030A  E8                         12      INX
+030B  D0 F5                      13      BNE print
+030D  20 00 FE                   15      JSR GETC
+0310  20 EF FF                   16      JSR PUTC
+0313  A9 0D                      17      LDA #$0D
+0315  20 EF FF                   18      JSR PUTC
+0318  4C 03 FF                   19      JMP PROMPT
+031B  48 45 4C 4C 4F 20 46 52 4F 4D 20 41 20 4C 4F 41 44 45 44 20 50 52 4F 47 52 41 4D 21 0D 50 52 45 53 53 20 41 20 4B 45 59 3A 20 00   21      .byte "HELLO FROM A LOADED PROGRAM!", $0D, "PRESS A KEY: ", 0

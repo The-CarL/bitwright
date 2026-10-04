@@ -1,0 +1,32 @@
+0300  D8                         11      CLD
+0301  A2 00                      12      LDX #0
+0303  8A                         14      TXA
+0304  9D 00 08                   15      STA BUFFER,X
+0307  E8                         16      INX
+0308  E0 10                      17      CPX #16
+030A  D0 F7                      18      BNE fill
+030C  A9 00                      19      LDA #<BUFFER
+030E  85 82                      20      STA PTR
+0310  A9 08                      21      LDA #>BUFFER
+0312  85 83                      22      STA PTR+1
+0314  20 2F 03                   23      JSR checksum
+0317  48                         24      PHA
+0318  A2 00                      25      LDX #0
+031A  BD 3C 03                   27      LDA message,X
+031D  F0 06                      28      BEQ result
+031F  20 EF FF                   29      JSR PUTC
+0322  E8                         30      INX
+0323  D0 F5                      31      BNE print
+0325  68                         33      PLA
+0326  20 03 FE                   34      JSR PUTHEX
+0329  20 06 FE                   35      JSR NEWLINE
+032C  4C 03 FF                   36      JMP PROMPT
+032F  A9 00                      38      LDA #0
+0331  A0 00                      39      LDY #0
+0333  18                         41      CLC
+0334  71 82                      42      ADC (PTR),Y
+0336  C8                         43      INY
+0337  C0 10                      44      CPY #16
+0339  D0 F8                      45      BNE sum_loop
+033B  60                         46      RTS
+033C  52 41 4D 20 43 48 45 43 4B 53 55 4D 20 28 48 45 58 29 20 3D 20 00   48      .byte "RAM CHECKSUM (HEX) = ",0

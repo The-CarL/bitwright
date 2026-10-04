@@ -1,0 +1,41 @@
+0300  D8                         12      CLD
+0301  A2 00                      13      LDX #0
+0303  BD 51 03                   15      LDA question,X
+0306  F0 06                      16      BEQ read_digit
+0308  20 EF FF                   17      JSR PUTC
+030B  E8                         18      INX
+030C  D0 F5                      19      BNE ask_loop
+030E  20 00 FE                   21      JSR GETC
+0311  C9 30                      22      CMP #'0'
+0313  90 F9                      23      BCC read_digit
+0315  C9 3A                      24      CMP #':'
+0317  B0 F5                      25      BCS read_digit
+0319  20 EF FF                   26      JSR PUTC
+031C  38                         27      SEC
+031D  E9 30                      28      SBC #'0'
+031F  85 81                      29      STA COUNT
+0321  20 3F 03                   30      JSR accumulate
+0324  20 06 FE                   31      JSR NEWLINE
+0327  A2 00                      32      LDX #0
+0329  BD 67 03                   34      LDA result,X
+032C  F0 06                      35      BEQ print_total
+032E  20 EF FF                   36      JSR PUTC
+0331  E8                         37      INX
+0332  D0 F5                      38      BNE result_loop
+0334  A5 80                      40      LDA TOTAL
+0336  20 03 FE                   41      JSR PUTHEX
+0339  20 06 FE                   42      JSR NEWLINE
+033C  4C 03 FF                   43      JMP PROMPT
+033F  A9 00                      45      LDA #0
+0341  85 80                      46      STA TOTAL
+0343  A6 81                      47      LDX COUNT
+0345  F0 09                      48      BEQ accumulate_done
+0347  8A                         50      TXA
+0348  18                         51      CLC
+0349  65 80                      52      ADC TOTAL
+034B  85 80                      53      STA TOTAL
+034D  CA                         54      DEX
+034E  D0 F7                      55      BNE sum_loop
+0350  60                         57      RTS
+0351  53 55 4D 20 31 2E 2E 4E 2E 20 44 49 47 49 54 20 30 2D 39 3A 20 00   59      .byte "SUM 1..N. DIGIT 0-9: ",0
+0367  53 55 4D 20 28 48 45 58 29 20 3D 20 00   61      .byte "SUM (HEX) = ",0

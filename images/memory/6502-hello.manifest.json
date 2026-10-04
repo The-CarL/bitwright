@@ -1,0 +1,12 @@
+{
+  "architecture": "NMOS 6502 documented opcodes",
+  "emitted_bytes": 70,
+  "end_exclusive": 838,
+  "entry": 768,
+  "format": "v2.0 raw, 8-bit words",
+  "origin": 768,
+  "padding": 0,
+  "sha256": "f8ed91dddd5977ef21535824c95bf59f3dd5543f21f2b473ff42860d3f31f174",
+  "size": 70,
+  "source": "software/demos/hello.asm"
+}
