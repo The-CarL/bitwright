@@ -291,6 +291,7 @@ def package_files(root: Path = ROOT) -> dict[str, bytes]:
         files.update((root / folder).rglob("*.md"))
         files.update((root / folder).rglob("*.json"))
         files.update((root / folder).rglob("*.svg"))
+        files.update((root / folder).rglob("*.png"))
     files.update((root / "software").rglob("*.asm"))
     files.update((root / "bridges/console/src").rglob("*.java"))
     files.update((root / "images/memory").glob("6502-*"))

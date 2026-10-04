@@ -31,8 +31,10 @@ extracted package itself, so a checkout dependency cannot hide a missing library
 ## Package
 
 The ZIP contains native projects, relative libraries, prebuilt console JAR,
-assembly demos/load records, source tools and documentation. It excludes the
-mouse experiment and its JAR. The simulator itself is installed separately.
+assembly demos/load records, source tools and documentation, including the
+illustrated architecture gallery, its PNGs and generation prompts. Gallery links
+are relative and work in the extracted package. It excludes the mouse experiment
+and its JAR. The simulator itself is installed separately.
 Checksums cover every package entry; fixed timestamps/order make repeat builds
 comparable. Java compilation targets 21 and strips debug paths.
 

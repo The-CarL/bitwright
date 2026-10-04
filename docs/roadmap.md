@@ -17,6 +17,9 @@ Implemented artifacts must be distinguished from accepted milestones. Native
 tests exercise real circuits; host reference-model tests do not establish native
 CPU correctness by themselves. A CPU subset is an intermediate result only.
 The CPU manifest describes implemented coverage and deliberate fidelity limits.
+Merging a reviewed development candidate does not close M6 or declare a release;
+remaining desktop, platform and performance acceptance stays tracked separately
+in the [evidence report](evidence/apple1-2026-10-01.md#follow-up-2026-10-04).
 
 ## Final demonstration
 

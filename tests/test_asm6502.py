@@ -84,6 +84,32 @@ end: .word start, message+1
             with self.subTest(case=case), self.assertRaises(AssemblyError):
                 assemble(source)
 
+    def test_missing_operands_reject_partial_instructions_with_line_context(self):
+        for instruction in ["LDA #", "LDA #   ; no value", "JMP ()", "JMP ( )",
+                            "LDA z:", "LDA a:", "LDA z:,X", "LDX z:,Y",
+                            "LDA a:,X", "LDA a:,Y", "LDA (,X)", "LDA ( ),Y",
+                            "LDA (),Y", "LDA ,X", "LDX ,Y", "BNE", "LDA"]:
+            source = f".org $0300\nNOP\n{instruction}\nnext: NOP"
+            with self.subTest(instruction=instruction), self.assertRaisesRegex(
+                    AssemblyError, r"^line 3: "):
+                assemble(source)
+
+    def test_implied_accumulator_and_zero_operands_remain_valid(self):
+        cases = {
+            "NOP": [0xEA], "ASL": [0x0A], "ASL A": [0x0A],
+            "LDA #0": [0xA9, 0], "LDA z:0": [0xA5, 0],
+            "LDA z:0,X": [0xB5, 0], "LDX z:0,Y": [0xB6, 0],
+            "LDA a:0": [0xAD, 0, 0], "LDA a:0,X": [0xBD, 0, 0],
+            "LDA a:0,Y": [0xB9, 0, 0], "JMP (0)": [0x6C, 0, 0],
+            "LDA (0,X)": [0xA1, 0], "LDA (0),Y": [0xB1, 0],
+            "BNE $0302": [0xD0, 0],
+        }
+        for instruction, expected in cases.items():
+            with self.subTest(instruction=instruction):
+                result = assemble(f".org $0300\n{instruction}\nnext: NOP")
+                self.assertEqual(result.binary(), bytes(expected + [0xEA]))
+                self.assertEqual(result.symbols["NEXT"], 0x300 + len(expected))
+
     def test_expression_resource_limits_reject_unbounded_work(self):
         for source in [".byte " + "1+" * 300 + "1", ".byte (1 << 63) << 1",
                        ".byte $FFFFFFFFFFFFFFFF * $FFFFFFFFFFFFFFFF", ".byte " + "1" * 5000,

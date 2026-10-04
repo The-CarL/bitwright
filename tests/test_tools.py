@@ -182,6 +182,41 @@ class TerminalBoundaryTests(unittest.TestCase):
             self.assertIn("build/bitwright-console.jar", initial)
             self.assertFalse(any(name.startswith("experiments/") or name=="build/bitwright-bridge.jar" for name in initial))
 
+    def test_package_includes_selected_gallery_images_and_provenance(self):
+        import hashlib
+        import json
+        import zipfile
+        from bw import CORE_FILES, PACKAGE_NAME, package_bytes, package_files, verify_package
+        source_root = Path(__file__).resolve().parents[1]
+        gallery = Path("docs/images/architecture")
+        provenance = json.loads((source_root / gallery / "prompts.json").read_text())
+        documents = [gallery / name for name in ["README.md", "prompts.json", *provenance["selectedImages"]]]
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            # The package selector runs against a complete source fixture without
+            # compiling Java; the gallery/provenance are the committed artifacts.
+            for name in CORE_FILES:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"fixture")
+            for relative in documents:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((source_root / relative).read_bytes())
+            files = package_files(root)
+            for relative in documents:
+                self.assertEqual(files[relative.as_posix()], (source_root / relative).read_bytes())
+            archive = root / "package.zip"
+            archive.write_bytes(package_bytes(files))
+            verify_package(archive)
+            with zipfile.ZipFile(archive) as packaged:
+                manifest = json.loads(packaged.read(PACKAGE_NAME + "/SHA256SUMS.json"))
+                for relative in documents:
+                    name = relative.as_posix()
+                    content = packaged.read(PACKAGE_NAME + "/" + name)
+                    self.assertEqual(content, files[name])
+                    self.assertEqual(manifest[name], hashlib.sha256(content).hexdigest())
+
     def test_package_is_deterministic_and_manifest_is_verified(self):
         from bw import package_bytes, verify_package
         import io

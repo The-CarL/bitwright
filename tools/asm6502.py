@@ -351,7 +351,7 @@ def assemble(source: str) -> Assembly:
             else:
                 name, mode, expr = value
                 data = [OPCODES[(name, mode)]]
-                if expr:
+                if LENGTHS[mode] > 1:
                     n = expression(expr, symbols, address)
                     if mode == "rel":
                         if not 0 <= n <= 65535:

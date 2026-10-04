@@ -26,7 +26,10 @@ This is a development candidate, not a cycle-perfect Apple-1 replica. The
 [architecture](architecture/apple1-direction.md) and
 [CPU manifest](circuits/generated/cpu6502-manifest.json) define the fidelity
 boundary. The [roadmap](docs/roadmap.md) separates implementation from release
-acceptance. Earlier M0 reports and the old echo bench remain historical fixtures.
+acceptance; merging development work does not mark the release complete. The
+[illustrated architecture gallery](docs/images/architecture/README.md) introduces
+the CPU, arithmetic/storage and input-to-pixel path. Earlier M0 reports and the
+old echo bench remain historical fixtures.
 
 ## Open and run
 
@@ -36,12 +39,13 @@ and keep its folders together; it includes the prebuilt console JAR. Open
 
 1. Select the Poke tool. **Reset starts at 1** to initialize gate storage; set it to 0.
 2. Enable automatic ticks in the Simulation menu.
-3. Right-click the **Apple1Console instance on the main circuit** and choose
-   **View Apple1Console**. This enters the running instance; opening its library
-   definition would show separate, unconnected state.
+3. In the left sidebar, select the **Simulate** tab, expand **Bitwright**, and
+   open its **Apple1Console** child. This enters the running instance; opening
+   the library definition would show separate, unconnected state.
 4. Wait for the `BITWRIGHT` banner and backslash prompt.
 5. Click **Load ASCII .mon file** and select `images/memory/6502-sum.mon`.
-6. The monitor loads the program and runs it. When prompted, type `9`.
+6. The monitor loads the program and runs it. Click the pixel screen with the
+   **Poke** tool to focus keyboard input, then type `9` when prompted.
    It computes `SUM (HEX) = 2D` (45 decimal), then returns to the monitor.
 
 Try `6502-hello.mon` and `6502-memory.mon` without changing the circuit. Program
